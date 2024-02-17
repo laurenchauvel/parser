@@ -2,6 +2,7 @@ import re
 import fitz
 import os
 import pathlib
+from langdetect import detect
 
 """
 fonction de reconnaissance des adresses mails
@@ -114,41 +115,46 @@ output : info sur le block
 def getBlocks(path) :
     with fitz.open(path) as pdf :
         page = pdf.load_page(0)
-        blocks = page.get_text('dict')['blocks']
+        #blocks = page.get_text('dict')['blocks']
+        blocks = page.get_text('blocks')
         reg  = r'Introduction'
         pat = re.compile(reg)
         i = 0
         #print(len(blocks))
         print()
-        print(blocks)
+        #print(blocks)
         i = 0
         for block in blocks :
-            #print(block)
-            for line in block['lines'] :
-                for span in line['spans'] :
-                    pass
-                    i += 1
-                    print(span['size'])
-                    print(span['font'])
-                    print(span['text'])
-                    print(i)
-                    matches = pat.findall(span['text'])
-                    print(matches)
-                    if matches :
-                        return i
-                        print("exist")
-                        break
-                    print("xxx")
-                    print()
-                    
-
+            #print(block[4])
+            #if  skipable(block) :
+                print(block[4],"\n_______________\n")
                 """
-                print(len(block['lines']))
-                print()
-                print(block['lines']['spans'])
-                print()
-                """
-                #print(block)
+                for line in block['lines'] :
+                    for span in line['spans'] :
+                        i += 1
+                        print(span['size'])
+                        print(span['font'])
+                        print(span['text'])
+                        print(i)
+                        print()
+                        matches = pat.findall(span['text'])
+                
+                        
+                        print(matches)
+                        if matches :
+                            return i
+                            print("exist")
+                            break
+                        
+                        print("xxx")
+                        print()
+                        
+                        print(len(block['lines']))
+                        print()
+                        print(block['lines']['spans'])
+                        print()
+                        """
+                        #print(block)
                 
         
 """
@@ -198,15 +204,27 @@ def find_title(path) :
         result = ""
         blocks = pdf.load_page(0).get_text('dict')['blocks']
         for block in blocks :
-            for line in block['lines'] :
-                for span in line['spans'] :
-                    if span['size'] == target :
-                        result += span['text']
+            if skipable(block) :
+                for line in block['lines'] :
+                    for span in line['spans'] :
+                        if span['size'] == target :
+                            result += str(span['text'])#.encode('utf-8'))
     return result
 
 """
 fonction qui trouve le block du titre
 """
+
+"""
+fonction qui skip un block
+input : block
+output : boolean
+"""
+def skipable(block) :
+    #verifie si c'est du texte
+    if block['type'] == 0 :
+        return True
+    return False
 
 """
 fonction qui retourne la taille max de la police du texte
@@ -218,11 +236,13 @@ def get_size(path) :
         result = 0
         blocks = pdf.load_page(0).get_text('dict')['blocks']
         for block in blocks :
-            for line in block['lines'] :
-                for span in line['spans'] :
-                    size = span['size']
-                    if size > result :
-                        result = size
+            if skipable(block) == True : #skip si c'est pas du texte
+                for line in block['lines'] :
+                    for span in line['spans'] :
+                        size = span['size']
+                        #si ce n'est pas un mot je le skip
+                        if size > result and (is_in_language(span['text'],'en')) == True :
+                            result = size
     return result
 
 """
@@ -236,10 +256,35 @@ def find_absract(path) :
         return pdf.load_page(0).get_text('blocks')[find_intro(path)[1]][4].encode('utf-8')
 
 """
-fonction pour reconnaitre un nom dans le texte
-input : path du fichier
+fonction pour donner les titres d'un corpus
+input : path du dossier
+output : les titres
+"""
+def corpus_title(path) :
+    for fichier in os.listdir(path) :
+        f = os.path.join(path,fichier)
+        if os.path.isfile(f) :
+            print(find_title(f))
+
+
+"""
+fonction qui dit si une chaine appartient bien à une langue
+#source : microsoft copilot
+input : text , prefixe dans la langue
 output : boolean
 """
+def is_in_language(text, language):
+    try:
+        detected_language = detect(text)
+        return detected_language == language
+    except:
+        return False
+
+"""
+text = "Googletrans est une bibliothèque python gratuite et illimitée qui a implémenté l'API Google Translate"
+print(is_in_language(text, 'fr'))  # Retourne True si le texte est en français
+"""
+
         
 
 
@@ -261,9 +306,10 @@ def main() :
     print(recognize_author(path3))
     print("========================================================================================")
     """
-    path4  = "/mnt/c/Users/KAHASHA/Documents/ubs/licence3/s2/parser/corpus/pdf/Boudin-Torres-2006.pdf"
+    path4  = "/mnt/c/Users/KAHASHA/Documents/ubs/licence3/s2/parser/corpus/pdf/mikheev J02-3002.pdf"
     #print(getBlocks(path4))
     print(find_title(path4))
+    #corpus_title("/mnt/c/Users/KAHASHA/Documents/ubs/licence3/s2/parser/corpus/pdf/")
 
 
 if __name__ == "__main__" :
