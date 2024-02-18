@@ -1,0 +1,7 @@
+Nom fichier source : Das_Martins.pdf
+_____________________________
+Titres : A Survey on Automatic Text Summarization
+_____________________________
+Auteurs : ['dipanjan', '', 'afm']
+_____________________________
+Abstract : ['Abstract\nThe increasing availability of online information has necessitated intensive\nresearch in the area of automatic text summarization within the Natural Lan-\nguage Processing (NLP) community. Over the past half a century, the prob-\nlem has been addressed from many diﬀerent perspectives, in varying domains\nand using various paradigms. This survey intends to investigate some of the\nmost relevant approaches both in the areas of single-document and multiple-\ndocument summarization, giving special emphasis to empirical methods and\nextractive techniques. Some promising approaches that concentrate on speciﬁc\ndetails of the summarization problem are also discussed. Special attention is\ndevoted to automatic evaluation of summarization systems, as future research\non summarization is strongly dependent on progress in this area.', 4]

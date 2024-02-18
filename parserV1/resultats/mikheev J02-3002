@@ -1,0 +1,7 @@
+Nom fichier source : mikheev J02-3002.pdf
+_____________________________
+Titres : Periods, Capitalized Words, etc.
+_____________________________
+Auteurs : [' mikheev', 'mikheev', '']
+_____________________________
+Abstract : ['In this article we present an approach for tackling three important aspects of text normaliza-\ntion: sentence boundary disambiguation, disambiguation of capitalized words in positions where\ncapitalization is expected, and identiﬁcation of abbreviations. As opposed to the two dominant\ntechniques of computing statistics or writing specialized grammars, our document-centered ap-\nproach works by considering suggestive local contexts and repetitions of individual words within\na document. This approach proved to be robust to domain shifts and new lexica and produced per-\nformance on the level with the highest reported results. When incorporated into a part-of-speech\ntagger, it helped reduce the error rate signiﬁcantly on capitalized words and sentence boundaries.\nWe also investigated the portability to other languages and obtained encouraging results.', 4]

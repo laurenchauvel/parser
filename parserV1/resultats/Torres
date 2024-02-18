@@ -1,0 +1,7 @@
+Nom fichier source : Torres.pdf
+_____________________________
+Titres : Summary Evaluation with and without References
+_____________________________
+Auteurs : ['juan-manuel torres', 'eric sanjuan', 'horacio saggion', 'iria dacunha', 'patricia velazquez', 'torres', '']
+_____________________________
+Abstract : ['Abstract—We\nstudy\na\nnew\ncontent-based\nmethod\nfor\nthe\nevaluation\nof\ntext\nsummarization\nsystems\nwithout\nhuman models which is used to produce system rankings.\nThe\nresearch\nis\ncarried\nout\nusing\na\nnew\ncontent-based\nevaluation framework called FRESA to compute a variety of\ndivergences among probability distributions. We apply our\ncomparison framework to various well-established content-based\nevaluation measures in text summarization such as COVERAGE,\nRESPONSIVENESS,\nPYRAMIDS\nand\nROUGE\nstudying\ntheir\nassociations in various text summarization tasks including\ngeneric multi-document summarization in English and French,\nfocus-based\nmulti-document\nsummarization\nin\nEnglish\nand\ngeneric single-document summarization in French and Spanish.', 2]
