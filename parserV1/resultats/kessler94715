@@ -1,7 +1,0 @@
-Nom fichier source : kessler94715.pdf
-_____________________________
-Titres : Extraction of terminology in the ﬁeld of construction
-_____________________________
-Auteurs : ['remy kessler', 'nicolas bechet', 'giuseppe berio', 'kessler', '']
-_____________________________
-Abstract : ['Abstract—We describe a corpus analysis method to extract\nterminology from a collection of technical speciﬁcations in the\nﬁeld of construction. Using statistics and word n-grams analysis,\nwe extract the terminology of the domain and then perform\npruning steps with linguistic patterns and internet queries to\nimprove the quality of the ﬁnal terminology. Results are evaluated\nby using a manual evaluation carried out by 6 experts in the ﬁeld.', 4]

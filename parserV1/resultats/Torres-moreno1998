@@ -1,7 +1,0 @@
-Nom fichier source : Torres-moreno1998.pdf
-_____________________________
-Titres : Efﬁcient Adaptive Learning for Classiﬁcation Tasks with Binary Units
-_____________________________
-Auteurs : joe@next.castanet.com Joe Pickert
-_____________________________
-Abstract : ['This article presents a new incremental learning algorithm for classi-\nﬁcation tasks, called NetLines, which is well adapted for both binary\nand real-valued input patterns. It generates small, compact feedforward\nneural networks with one hidden layer of binary units and binary output\nunits. A convergence theorem ensures that solutions with a ﬁnite num-\nber of hidden units exist for both binary and real-valued input patterns.\nAn implementation for problems with more than two classes, valid\nfor any binary classiﬁer, is proposed. The generalization error and\nthe size of the resulting networks are compared to the best published\nresultsonwell-knownclassiﬁcationbenchmarks.Earlystoppingisshown\nto decrease overﬁtting, without improving the generalization perfor-\nmance.', 3]
