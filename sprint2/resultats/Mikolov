@@ -1,0 +1,7 @@
+Nom fichier source : Mikolov.pdf
+_____________________________
+Titres : Efﬁcient Estimation of Word Representations in Vector Space
+_____________________________
+Auteurs : ['tmikolov', 'kaichen', 'gcorrado', 'jeff', 'tmikolov', '']
+_____________________________
+Abstract : ['Abstract\nWe propose two novel model architectures for computing continuous vector repre-\nsentations of words from very large data sets. The quality of these representations\nis measured in a word similarity task, and the results are compared to the previ-\nously best performing techniques based on different types of neural networks. We\nobserve large improvements in accuracy at much lower computational cost, i.e. it\ntakes less than a day to learn high quality word vectors from a 1.6 billion words\ndata set. Furthermore, we show that these vectors provide state-of-the-art perfor-\nmance on our test set for measuring syntactic and semantic word similarities.', 5]

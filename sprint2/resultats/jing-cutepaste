@@ -1,0 +1,7 @@
+Nom fichier source : jing-cutepaste.pdf
+_____________________________
+Titres : Cut and Paste Based Text Summarization
+_____________________________
+Auteurs : Hongyan Jing; Kathleen R. McKeown
+_____________________________
+Abstract : ['We present a cut and paste based text summa- \nrizer, which uses operations derived from an anal- \nysis of human written abstracts. \nThe summarizer \nedits extracted sentences, using reduction to remove \ninessential phrases and combination to merge re- \nsuiting phrases together as coherent sentences. Our \nwork includes a statistically based sentence decom- \nposition program that identifies where the phrases of \na summary originate in the original document, pro- \nducing an aligned corpus of summaries and articles \nwhich we used to develop the summarizer.', 7]
