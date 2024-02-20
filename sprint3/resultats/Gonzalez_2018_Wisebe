@@ -1,7 +1,0 @@
-Nom fichier source : Gonzalez_2018_Wisebe.pdf
-_____________________________
-Titres : WiSeBE: Window-Based Sentence Boundary Evaluation
-_____________________________
-Auteurs : ['carlos-emiliano gonzalez-gallardo', 'juan-manuel torres', 'gallardo', '']
-_____________________________
-Abstract : ['Abstract. Sentence Boundary Detection (SBD) has been a major\nresearch topic since Automatic Speech Recognition transcripts have been\nused for further Natural Language Processing tasks like Part of Speech\nTagging, Question Answering or Automatic Summarization. But what\nabout evaluation? Do standard evaluation metrics like precision, recall,\nF-score or classiﬁcation error; and more important, evaluating an auto-\nmatic system against a unique reference is enough to conclude how well\na SBD system is performing given the ﬁnal application of the transcript?\nIn this paper we propose Window-based Sentence Boundary Evaluation\n(WiSeBE), a semi-supervised metric for evaluating Sentence Boundary\nDetection systems based on multi-reference (dis)agreement. We evalu-\nate and compare the performance of diﬀerent SBD systems over a set\nof Youtube transcripts using WiSeBE and standard metrics. This dou-\nble evaluation gives an understanding of how WiSeBE is a more reliable\nmetric for the SBD task.', 3]
