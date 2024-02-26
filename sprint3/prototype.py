@@ -14,8 +14,8 @@ class Parser :
     --> et une liste contenant les types
     """
     def recognize_adress(self,path) :
-        adr1 = r'([\w+.+ +-]+)@' #format adresse mail classique
-        adr2 = r'{?(\w+)(,\ \w+)*}?@' #format de regroupement
+        adr1 = r'([\w+.+ +-]+)@([\w+.+-]+)' #format adresse mail classique
+        adr2 = r'{(\w+)(,\ \w+)*}@([\w+.+-]+)' #format de regroupement
         pattern1 = re.compile(adr1)
         pattern2 = re.compile(adr2)
         result = [None,None]
@@ -23,9 +23,35 @@ class Parser :
             matches1 = pattern1.findall(res.load_page(0).get_text())
             matches2 = pattern2.findall(res.load_page(0).get_text())
             if matches1 :
+                print(matches1)
                 result[0] = matches1
             if matches2 :
                 result[1] = matches2[0]
+        return result
+    
+    """
+    fonction de reconnaissance des adresses mails
+    retourne un tuple avec liste contenant le prefixe de chaque adresse
+    --> et une liste contenant les types
+    """
+    def recognize_adress__(self,chaine) :
+        adr1 = r'([\w+.+ +-]+)@([\w+.+-]+)' #format adresse mail classique
+        adr2 = r'[{\(](\w+)(,\ \w+)*[}\)]@([\w+.+-]+)' #format de regroupement
+        adr3 = r'\(([\w.-]+(?:,[\w.-]+)*)\)@([\w.-]+\.[\w.-]+)'
+        pattern1 = re.compile(adr1)
+        pattern2 = re.compile(adr2)
+        pattern3 = re.compile(adr3)
+        result = [None,None,None]
+        matches1 = pattern1.findall(chaine)
+        matches2 = pattern2.findall(chaine)
+        matches3 = pattern3.findall(chaine)
+        if matches1 :
+            result[0] = matches1
+        if matches2 :
+            result[1] = matches2[0]
+        if matches3 :
+            print(matches3)
+            result[2] = matches3[0]
         return result
 
     """
@@ -40,28 +66,61 @@ class Parser :
         if t[0] :
             #on parcours chaque mot
             for i in range(len(t[0])) :
-                result.append(sep.join(t[0][i].split(".")))
-        #on passe aux adre2
-        if t[1] :
-            for val in t[1] :
-                for jul in val.split(",") :
-                    result.append(jul.strip()) #enleve les espaces inutiles
+                result.append((sep.join(t[0][i][0].split(".")),t[0][i][0]+'@'+t[0][i][1]))
+        #on passe aux adr2 et 3
+        if t[1] or t[2] :
+            if t[1] :
+                for j in range(len(t[1])-1):
+                    if t[1][j][0] != ',' :
+                        for jul in t[1][j].split() : #.split(",") :
+                            result.append(jul.strip()) #enleve les espaces inutiles
+                    else :
+                        for jul in t[1][j].split(',')[1:] : #.split(",") :
+                            result.append(jul.strip()) #enleve les espaces inutiles
+                for i in range(len(result)) :
+                    result[i] = ((sep.join(result[i].split(".")),result[i]+'@'+t[1][len(t[1])-1]))
+            if t[2] :
+                print("RRRRRRRRRRRRRRRRRR")
+                for j in range(len(t[2])-1):
+                    if t[2][j][0] != ',' :
+                        for jul in t[2][j].split() : #.split(",") :
+                            result.append(jul.strip()) #enleve les espaces inutiles
+                    else :
+                        for jul in t[2][j].split(',')[1:] : #.split(",") :
+                            result.append(jul.strip()) #enleve les espaces inutiles
+                for i in range(len(result)) :
+                    result[i] = ((sep.join(result[i].split(".")),result[i]+'@'+t[2][len(t[1])-1]))
         return result
 
 
     """
     fonction qui permet de former des abreviations
-    input : liste de string sous forme de nom + prenom 
-    output : liste de tuple contenant nom + abr sous forme de string
+    input : tuple de string sous forme de nom + prenom + adresse
+    output :  tuple contenant nom + adresse + abr sous forme de string
     """
-    def make_abr(self,li) :
+    def make_abr(self,tu) :
         result = []
-        for val in li :
-            abr = ""
-            for jul in val.split():
-                abr += (jul[0])
-            result.append((val,abr))
+        for val in tu :
+            i = 0
+            for j in range(len(val)) :
+                if i < 1 :
+                    abr = self.make_abr_name(val[j])[1]
+                    result.append((val[0],val[1],abr))
+                i += 1
         return result
+    
+    """
+    fonction qui permet de former des abreviations
+    input : string
+    output :  tuple avec nom et abr
+    """
+    def make_abr_name(self,nom) :
+        abr = ""
+        for jul in nom.split(" "):
+            print(jul[0])
+            abr += (jul[0])
+            print(abr)
+        return (nom,abr)
 
     """
     reconnait des chaines qui ont la forme d'un nom
@@ -83,20 +142,46 @@ class Parser :
     output : liste des supposés noms
     """
     def getAuthor(self,path) :
-        auteurs = self.make_name(self.recognize_adress(path))
-        if auteurs != [] :
-            print("1")
-            return auteurs
-        else :
-            with fitz.open(path) as pdf :
-                meta = pdf.metadata
-                auteurs2 = meta['author']
-            if auteurs2 != "" :
-                print("2")
-                return auteurs2
+        auteurs = []
+        with fitz.open(path) as pdf :
+            meta = pdf.metadata
+            if meta['author'] :
+                auteursliste = self.make_abr(self.make_name(self.recognize_adress__(self.getAuthorZone(path))))
+                auteurstmp = meta['author'].split(';')
+                if auteursliste :
+                    i = 0
+                    for val in auteursliste :
+                        matches1 = re.compile(rf'{val[0].split()[0]}').findall(meta['author'].lower())
+                        matches2 = re.compile(rf'{val[0].split()[1]}').findall(meta['author'].lower())
+                        if matches1 :
+                            if matches2 :
+                                auteurs.append((" ".join(matches1+matches2),val[1]))
+                            else :
+                                auteurs.append((" ".join(matches1),val[1]))
+                        elif matches2 :
+                            auteurs.append((matches2,val[1]))
+                        else :
+                            for j in range(len(auteurstmp)) :
+                                print(val[2])
+                                print(auteurstmp[j])
+                                if re.compile(rf'{val[2]}').findall(self.make_abr_name(auteurstmp[j])) :
+                                    print(auteurstmp[j])
+                                    auteurs.append((auteurstmp[j],val[1]))
+                        i += 1
             else :
-                print("3")
-                return self.recognize_name(self.getAuthorZone(path))
+                auteursliste = self.make_abr(self.make_name(self.recognize_adress__(self.getAuthorZone(path))))
+                if auteursliste != [] :
+                    for val in auteursliste :
+                        print("2")
+                        auteurs.append((val[0],val[1]))
+                else :
+                    auteursliste = self.recognize_name(self.getAuthorZone(path))
+                    if auteursliste != [] :
+                        print("3")
+                        auteurs = ", ".join(auteursliste)
+                    else :
+                        print('4')         
+        return auteurs
 
     """
     fonction qui retourne les auteurs
@@ -149,6 +234,71 @@ class Parser :
     def to_formate(self,zone) :
         zone = zone.split("\n")
         return ''.join(zone)
+    
+    """
+    """
+    def to_formalize(self,texte) :
+        pass
+    
+    """
+    fonction qui retourne le block des refs
+    input : path
+    output : numero du block et de page
+    """
+    def getRefsBlockNumber(self,path) :
+        j = 0
+        size = 0
+        result = [0,0,0]
+        pattern = re.compile(r'reference')
+        with fitz.open(path) as pdf :
+            for page in pdf :
+                blocks = page.get_text('dict')['blocks']
+                i = 0
+                for block in blocks :
+                    if self.skipable(block) :
+                        for line in block['lines'] :
+                            for span in line['spans'] :
+                                matches = pattern.findall(span['text'].lower())
+                                if matches :
+                                    if size < span['size'] :
+                                        size = span['size']
+                                        result[0] = j
+                                        result[1] = i
+                                        result[2] = size
+                    i += 1
+                j += 1
+        return result
+    
+    """
+    fonction qui retourne les references
+    input : path
+    output = refs
+    """
+    def find_refs(self,path) :
+        result = ""
+        with fitz.open(path) as pdf :
+            npage = self.getRefsBlockNumber(path)[0]
+            nblock = self.getRefsBlockNumber(path)[1]
+            nsize = self.getRefsBlockNumber(path)[2]
+            boolean = False
+            print(pdf.page_count)
+            for i in range(npage,pdf.page_count) :
+                current = pdf.load_page(i)
+                blocks = current.get_text('dict')['blocks']
+                i = 0
+                for block in blocks :
+                    if self.skipable(block) :
+                        if i >= nblock :
+                            for line in block['lines'] :
+                                for span in line['spans'] :
+                                    if nsize == span['size'] :
+                                        boolean = True
+                                    if boolean == True :
+                                        result += " " + span['text'] 
+                    i +=1
+        return result
+                    
+               
             
     """
     fonction qui retourne la position du block d'intro et d'abstract
@@ -340,12 +490,18 @@ def is_in_language(text, language):
 
 def main(path1,path2) :
     parser = Parser()
-    """
-    path1  = "/mnt/c/Users/KAHASHA/Documents/ubs/licence3/s2/parser/corpus/pdf/"
-    path2 = "/mnt/c/Users/KAHASHA/Documents/ubs/licence3/s2/parser/parserV1/resultats/"
-    """
     summarize(parser,path1,path2)
 
 if __name__ == "__main__" :
+    parser = Parser()
+    print(parser.getAuthorZone(sys.argv[1]))
+    print()
+    print(parser.getAuthor(sys.argv[1]))
+    
+    
+    """
     if len(sys.argv) == 3 :
         main(sys.argv[1],sys.argv[2])
+    else :
+        main(sys.argv[1])
+    """

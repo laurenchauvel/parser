@@ -7,14 +7,14 @@ Created on Fri Feb 23 14:53:52 2024
 """
 
 import os
-from prototype import Parser
+import prototype as proto
 
 class FileTXT:
     def __init__(self):
         self.title = ""
         self.authors = ""
         self.abstract = ""
-        self.parser = Parser()
+        self.parser = proto.Parser()
         
     """
         Fonction qui Supprime Abstract s'il revient deux fois
@@ -67,10 +67,14 @@ class FileTXT:
                     d.write(fileTXT.find_titleTXT(sfile))
                     d.write("\n_____________________________\n")
                     d.write("Auteurs : ")
-                    d.write(str(fileTXT.getAuthorTXT(sfile)))
+                    #d.write(str(fileTXT.getAuthorTXT(sfile)))
+                    d.write("\n")
                     d.write("\n_____________________________\n")
                     d.write("Abstract : ")
                     d.write(str(fileTXT.find_abstractTXT(sfile)[0]))
+                    d.write("\n_____________________________\n")
+                    d.write("Biblio : ")
+                    d.write(fileTXT.parser.find_refs(sfile))
                     
 if __name__ == "__main__" :
     fileTXT = FileTXT()
