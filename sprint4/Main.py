@@ -33,6 +33,12 @@ class Main :
         else :
             xmlMain = xml.FileXML()
             xmlMain.write_file(path_src,path_dest)
+def usage():
+   print("Usage: python Main.py chemin_du_repertoire_source chemin_du_repertoire_destination [-t | -x]")
+   print("Options:")
+   print("  -t : Générer des fichiers texte")
+   print("  -x : Générer des fichiers XML")
+   sys.exit(1)
 
 def main(s,d,o="-t") :
     main = Main()
@@ -40,9 +46,9 @@ def main(s,d,o="-t") :
 
 if __name__ == "__main__" :
     if len(sys.argv) < 3 :
-            SystemExit(-1)
+        usage()
     elif len(sys.argv) > 4 :
-        SystemExit(-1)
+        usage()
     else :
         if len(sys.argv) == 4 :
             print("o")
