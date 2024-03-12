@@ -25,25 +25,7 @@ class FileXML :
     Output :    xml_file : le fichier XML
     """    
     def write_file(self, src, dest):
-        """
-        with open(dest, "w") as xml:
-
-            xml.write("<article>\n")
-            xml.write("\t<preamble> " + os.path.splitext(src) + " </preamble>\n")
-            xml.write("\t<titre> " + self.parser.find_title(src) + " </titre>\n")
-            xml.write("\t<auteurs>\n")
-            
-            for auteur in self.parser.getAuthors(src) :
-                xml.write("\t\t<auteur>")
-                xml.write("\t\t\t<name> ", " </name>\n")
-                xml.write("\t\t\t<mail> ",  "</mail>\n")
-                xml.write("\t\t</auteur>\n")
-
-            xml.write("\t</auteurs>\n")
-            xml.write("\t<abstract> " +self.parser.find_abstract(src)[0] + " </abstract>\n")
-            xml.write("\t<biblio> "+ self.parser.find_refs(src) +" </biblio>\n")
-            xml.write("</article>")
-        """
+    
         if not os.path.exists(dest):
             os.makedirs(dest)
         for fichier in os.listdir(src) :
@@ -59,13 +41,18 @@ class FileXML :
                 """
                 for auteur in self.parser.getAuthors(src) :
                     xml.write("\t\t<auteur>")
-                    xml.write("\t\t\t<name> ", " </name>\n")
-                    xml.write("\t\t\t<mail> ",  "</mail>\n")
+                    xml.write("\t\t\t<name> "+ +" </name>\n")
+                    xml.write("\t\t\t<mail> "+ +"</mail>\n")
+                    xml.write("\t\t\t<affiliation> "+ +"</affiliation>\n")
                     xml.write("\t\t</auteur>\n")
                 """
                 xml.write("\t</auteurs>\n")
                 xml.write("\t<abstract> " +self.parser.find_abstract(sfile)[0] + " </abstract>\n")
-                xml.write("\t<biblio> "+ self.parser.find_refs(sfile) +" </biblio>\n")
+                xml.write("\t<introduction> " +self.parser.findIntro(sfile) + " </introduction>\n")
+                xml.write("\t<corps> " +self.parser.findCorps(sfile) + " </corps>\n")
+                xml.write("\t<conclusion> " +self.parser.find_discussion_or_conclusion(sfile) + " </conclusion>\n")
+                xml.write("\t<discussion> " +self.parser.find_discussion_or_conclusion(sfile, "d") + " </discussion>\n")
+                xml.write("\t<biblio> "+ self.parser.findRefs(sfile) +" </biblio>\n")
                 xml.write("</article>")
 
                 

@@ -299,7 +299,7 @@ class Parser :
     input : path et un paramtre qui dit si on veut la conclusion ou la discussion
     output : conclusion en string
     """
-    def find_discussion_or_conclusion(self,path,r) :
+    def find_discussion_or_conclusion(self,path,r="c") :
         result = ""
         b = True
         if r == 'd' : #pour une discussion
