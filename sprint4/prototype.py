@@ -2,6 +2,7 @@ import re
 import fitz
 import os
 import sys
+import spacy
 from langdetect import detect
 
 class Parser :
@@ -543,47 +544,30 @@ class Parser :
     input : chemin du fichier
     output : liste des supposés noms
     """
-    def getAuthor(self,path) :
+    def getAuthors(self,path) :
         auteurs = []
-        with fitz.open(path) as pdf :
-            meta = pdf.metadata
-            if meta['author'] :
-                auteursliste = self.make_abr(self.make_name(self.recognize_adress__(self.getAuthorZone(path))))
-                auteurstmp = meta['author'].split(';')
-                if auteursliste :
-                    i = 0
-                    for val in auteursliste :
-                        matches1 = re.compile(rf'{val[0].split()[0]}').findall(meta['author'].lower())
-                        matches2 = re.compile(rf'{val[0].split()[1]}').findall(meta['author'].lower())
-                        if matches1 :
-                            if matches2 :
-                                auteurs.append((" ".join(matches1+matches2),val[1]))
-                            else :
-                                auteurs.append((" ".join(matches1),val[1]))
-                        elif matches2 :
-                            auteurs.append((matches2,val[1]))
-                        else :
-                            for j in range(len(auteurstmp)) :
-                                print(val[2])
-                                print(auteurstmp[j])
-                                if re.compile(rf'{val[2]}').findall(self.make_abr_name(auteurstmp[j])) :
-                                    print(auteurstmp[j])
-                                    auteurs.append((auteurstmp[j],val[1]))
-                        i += 1
-            else :
-                auteursliste = self.make_abr(self.make_name(self.recognize_adress__(self.getAuthorZone(path))))
-                if auteursliste != [] :
-                    for val in auteursliste :
-                        print("2")
-                        auteurs.append((val[0],val[1]))
-                else :
-                    auteursliste = self.recognize_name(self.getAuthorZone(path))
-                    if auteursliste != [] :
-                        print("3")
-                        auteurs = ", ".join(auteursliste)
-                    else :
-                        print('4')         
+        auteursliste = self.make_abr(self.make_name(self.recognize_adress__(self.getAuthorZone(path))))
+        print("XXXX")
+        if auteursliste != [] :
+            for val in auteursliste :
+                print("2")
+                auteurs.append((val[0],val[1])) 
         return auteurs
+    
+    """
+    fonction de reconnaissance
+    input : zone de texte
+    output : liste
+    """
+    def takeGoodString(self,zone,motif) :
+        tabMotif = motif.split()
+        result = []
+        tabZone = zone.split()
+        for val,jul in zip(tabZone[:len(tabZone)-1],tabZone[1:]) :
+            for m in tabMotif :
+                if m in val.lower() or jul.lower() :
+                    result.appenf(' '.join([val,jul]))
+        return result
 
 
  
@@ -609,8 +593,50 @@ def is_in_language(text, language):
     except:
         return False
 
+"""
+fonction qui reconnait des noms dans du texte
+input : texte
+output : auteurs en str
+"""
+def takeAuthors(texte) :
+    nlpfr = spacy.load('fr_core_news_sm')
+    tmp = nlpfr(texte)
+    for val in tmp.ents :
+        if val.label_ == 'PER' :
+            print(val.text)
+
+"""
+fonction de reconnaissance
+input : zone de texte
+output : liste
+"""
+def takeGoodString(zone,motif) :
+    tabMotif = motif.split()
+    print(tabMotif)
+    result = []
+    tabZone = zone.split()
+    for val,jul in zip(tabZone[:len(tabZone)-1],tabZone[1:]) :
+        for m in tabMotif :
+            print(val," -- ",jul)
+            if m.lower() in val.lower() or m in jul.lower() :
+                result.append(' '.join([val,jul]))
+    return result
+
+"""
+fonction qui normalise les noms
+
+"""
 
 
-def main(path1,path2) :
-    parser = Parser()
+def main() :
+    #parser = Parser()
+    #print(parser.getAuthors(path1))
+    print("ta maman")
+    zone = "je suis Mugisho nailman dans ta maman"
+    motif = "Mugisho nailman"
+    result = takeGoodString(zone,motif)
+    print(result)
 
+
+if __name__ == "__main__" :
+    main()
