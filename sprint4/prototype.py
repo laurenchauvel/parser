@@ -2,7 +2,6 @@ import re
 import fitz
 import os
 import sys
-import spacy
 from langdetect import detect
 
 class Parser :
@@ -609,21 +608,6 @@ def is_in_language(text, language):
         return detected_language == language
     except:
         return False
-
-"""
-fonction qui reconnait des noms dans du texte
-input : texte
-output : auteurs en str
-"""
-def takeAuthors(texte) :
-    nlpfr = spacy.load('fr_core_news_sm')
-    tmp = nlpfr(texte)
-    for val in tmp.ents :
-        if val.label_ == 'PER' :
-            print(val.text)
-
-
-
 
 
 
