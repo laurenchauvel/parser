@@ -92,9 +92,3 @@ class FileTXT:
             d.write("Biblio : ")
             d.write(fileTXT.parser.findRefs(src))
                     
-if __name__ == "__main__" :
-    fileTXT = FileTXT()
-    src = "../corpus/pdf/"
-    dst = "../sprint4/resultatsTXT"
-    fileTXT.write_file(src,dst)
-    print("réussi")
