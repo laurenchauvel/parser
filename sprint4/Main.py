@@ -2,7 +2,6 @@
 """
 Created on Tue Feb 20 14:16:36 2024
 
-@author: laure
 """
 import sys
 import FileXML as xml
