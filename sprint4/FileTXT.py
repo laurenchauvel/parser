@@ -16,18 +16,28 @@ class FileTXT:
         self.abstract = ""
         self.parser = proto.Parser()
         
-    """
-        Fonction qui Supprime Abstract s'il revient deux fois
-    """    
-    def find_abstractTXT(self,path) :        
-        resultat, pos = self.parser.findAbstract(path)
-        self.abstract = resultat.replace("Abstract", "")    
-        return [self.abstract.strip(), pos]
     
-    """
-        Fonction qui traite les valeurs d'un tableau de auteurs 
-    """  
+    def find_abstractTXT(self,path) :
+        """
+            Supprime Abstract s'il revient deux fois
+            Input :     self
+                        path : chemin du fichier pdf 
+                        
+            Output :    self.abstract : le résumé 
+        """            
+        resultat, pos = self.parser.findAbstract(path)
+        abstract = resultat.replace("Abstract", "")  
+        self.abstract = [abstract.strip(), pos]
+        return self.abstract
+    
     def getAuthorTXT(self,path):
+        """
+            Traite les valeurs d'un tableau de auteurs 
+            Input :     self
+                        path : chemin du fichier pdf 
+                        
+            Output :    self.authors: les auteurs 
+        """  
         auteurs = self.parser.getAuthor(path)
         val=""
         if isinstance(auteurs, list) and auteurs:
@@ -39,46 +49,52 @@ class FileTXT:
             self.authors = auteurs
             return self.authors
      
-     
-    """
-        Fonction qui trouve le titre 
-    """  
     def find_titleTXT(self,path) :
+        """
+            Trouve le titre 
+            Input :     self
+                        path : chemin du fichier pdf 
+                        
+            Output :    self.title: le titre
+        """  
         self.title = self.parser.findTitle(path)
         return self.title
-    
-    """
-        Ecris le fichier TXT  
-    """    
+      
     def write_file(fileTXT, src, dst):
+        """
+            Ecris le fichier TXT 
+            Input :     self
+                        path : chemin du fichier pdf 
+        """  
     
-            if not os.path.exists(dst):
-                os.makedirs(dst)
-            for fichier in os.listdir(src) :
-                sfile = os.path.join(src,fichier)
-                #Obtient le nom du fichier sans l'extension
-                base_name = os.path.splitext(fichier)[0]
-                dfile = os.path.join(dst, base_name + '.txt')
-                with open(dfile,'w') as d :
-                    d.write("Nom fichier source : ")
-                    d.write(base_name+".pdf")
-                    d.write("\n_____________________________\n")
-                    d.write("Titres : ")
-                    d.write(fileTXT.find_titleTXT(sfile))
-                    d.write("\n_____________________________\n")
-                    d.write("Auteurs : ")
-                    #d.write(str(fileTXT.getAuthorTXT(sfile)))
-                    d.write("\n")
-                    d.write("\n_____________________________\n")
-                    d.write("Abstract : ")
-                    d.write(str(fileTXT.find_abstractTXT(sfile)[0]))
-                    d.write("\n_____________________________\n")
-                    d.write("Biblio : ")
-                    d.write(fileTXT.parser.findRefs(sfile))
+        if not os.path.exists(dst):
+            os.makedirs(dst)
+        base_name = os.path.splitext(os.path.basename(src))[0]
+
+        # Chemin du fichier de destination
+        dfile = os.path.join(dst, base_name + '.txt')
+        
+        # Extraction des informations et écriture dans le fichier de destination
+        with open(src, 'r'), open(dfile, 'w') as d:
+            d.write("Nom fichier source : ")
+            d.write(base_name + ".pdf")
+            d.write("\n_____________________________\n")
+            d.write("Titres : ")
+            d.write(fileTXT.find_titleTXT(src))
+            d.write("\n_____________________________\n")
+            d.write("Auteurs : ")
+            #d.write(str(fileTXT.getAuthorTXT(src)))
+            d.write("\n")
+            d.write("\n_____________________________\n")
+            d.write("Abstract : ")
+            d.write(str(fileTXT.find_abstractTXT(src)[0]))
+            d.write("\n_____________________________\n")
+            d.write("Biblio : ")
+            d.write(fileTXT.parser.findRefs(src))
                     
 if __name__ == "__main__" :
     fileTXT = FileTXT()
     src = "../corpus/pdf/"
-    dst = "../sprint3/resultatsTXT"
+    dst = "../sprint4/resultatsTXT"
     fileTXT.write_file(src,dst)
     print("réussi")
