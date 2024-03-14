@@ -30,7 +30,7 @@ class FileXML :
             os.makedirs(dest)
         
         #Obtient le nom du fichier sans l'extension
-        base_name = os.path.splitext(src)[0]
+        base_name = os.path.splitext(os.path.basename(src))[0]
         dfile = os.path.join(dest, base_name)
         with open(dfile,'w') as xml :
             xml.write("<article>\n")
