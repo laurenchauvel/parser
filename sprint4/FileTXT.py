@@ -20,7 +20,7 @@ class FileTXT:
         Fonction qui Supprime Abstract s'il revient deux fois
     """    
     def find_abstractTXT(self,path) :        
-        resultat, pos = self.parser.find_abstract(path)
+        resultat, pos = self.parser.findAbstract(path)
         self.abstract = resultat.replace("Abstract", "")    
         return [self.abstract.strip(), pos]
     
@@ -44,7 +44,7 @@ class FileTXT:
         Fonction qui trouve le titre 
     """  
     def find_titleTXT(self,path) :
-        self.title = self.parser.find_title(path)
+        self.title = self.parser.findTitle(path)
         return self.title
     
     """
@@ -74,7 +74,7 @@ class FileTXT:
                     d.write(str(fileTXT.find_abstractTXT(sfile)[0]))
                     d.write("\n_____________________________\n")
                     d.write("Biblio : ")
-                    d.write(fileTXT.parser.find_refs(sfile))
+                    d.write(fileTXT.parser.findRefs(sfile))
                     
 if __name__ == "__main__" :
     fileTXT = FileTXT()
