@@ -6,9 +6,11 @@ import spacy
 from langdetect import detect
 
 class Parser :
-    def __init__(self) :
-        pass
-    
+
+    def __init__(self,path) :
+        self.path = path
+        self.pages = getPages(path)[0]
+        self.pdf = getPages(path)[1]
     
 #------------------------------------------------------------------------------
 
@@ -31,17 +33,16 @@ class Parser :
     input : path
     output : titre
     """
-    def findTitle(self,path) :
-        with fitz.open(path) as pdf :
-            target = self.getTileSize(path)[0] #la taille max
-            result = ""
-            blocks = pdf.load_page(0).get_text('dict')['blocks']
-            for block in blocks :
-                if self.skipable(block) :
-                    for line in block['lines'] :
-                        for span in line['spans'] :
-                            if span['size'] == target :
-                                result += " " + str(span['text'])#.encode('utf-8'))
+    def findTitle(self) :
+        target = self.getTileSize()[0] #la taille max
+        result = ""
+        blocks = self.pages[0].get_text('dict')['blocks']
+        for block in blocks :
+            if self.skipable(block) :
+                for line in block['lines'] :
+                    for span in line['spans'] :
+                        if span['size'] == target :
+                            result += " " + str(span['text'])#.encode('utf-8'))
         return result.strip() #enleve les espaces inutiles
     
 
@@ -50,22 +51,21 @@ class Parser :
     input : path
     output : int size , numero pos du block dans une liste
     """
-    def getTileSize(self,path) :
-        with fitz.open(path) as pdf :
-            result = 0
-            pos = None
-            i = 0
-            blocks = pdf.load_page(0).get_text('dict')['blocks']
-            for block in blocks :
-                if self.skipable(block) == True : #skip si c'est pas du texte
-                    for line in block['lines'] :
-                        for span in line['spans'] :
-                            size = span['size']
-                            #si ce n'est pas un mot je le skip
-                            if size > result and (is_in_language(span['text'],'en')) == True :
-                                result = size
-                                pos = i
-                i += 1
+    def getTileSize(self) :
+        result = 0
+        pos = None
+        i = 0
+        blocks = self.pages[0].get_text('dict')['blocks']
+        for block in blocks :
+            if self.skipable(block) == True : #skip si c'est pas du texte
+                for line in block['lines'] :
+                    for span in line['spans'] :
+                        size = span['size']
+                        #si ce n'est pas un mot je le skip
+                        if size > result and (is_in_language(span['text'],'en')) == True :
+                            result = size
+                            pos = i
+            i += 1
         return [result,pos]    
     
     
@@ -80,23 +80,22 @@ class Parser :
     input : chemin du fichier
     output : i le nombre de tour pour atteindre le block de l'intro et d'abstract dans une liste
     """
-    def findAbsBlock(self,path) : 
+    def findAbsBlock(self) : 
         pat1 = re.compile(r'abstract')
         abs = 0              #pos de abs
         b1 = False              #signe si on trouve abstract
         result = [abs]
-        with fitz.open(path) as pdf : #je recupere les differents blocks du pdf
-            blocks = pdf.load_page(0).get_text('dict')['blocks']
-            for block in blocks : #je parcours chaque block
-                if self.skipable(block) :
-                    for line in block['lines'] : #je parcours chaque ligne de chaque block
-                        for span in line['spans'] : #parcours de ligne et recuperation du texte
-                            matches1 = pat1.findall(span['text'].lower())
-                            if matches1 :
-                                if b1 == False :
-                                    result[0] = abs
-                                    b1 = True
-                abs += 1
+        blocks = self.pages[0].get_text('dict')['blocks']
+        for block in blocks : #je parcours chaque block
+            if self.skipable(block) :
+                for line in block['lines'] : #je parcours chaque ligne de chaque block
+                    for span in line['spans'] : #parcours de ligne et recuperation du texte
+                        matches1 = pat1.findall(span['text'].lower())
+                        if matches1 :
+                            if b1 == False :
+                                result[0] = abs
+                                b1 = True
+            abs += 1
         return result
     
     """
@@ -104,27 +103,26 @@ class Parser :
     input : chemin du fichier
     output : i le nombre de tour pour atteindre le block de l'intro et d'abstract dans une liste
     """
-    def findIntroBlock(self,path) : 
+    def findIntroBlock(self) : 
         pat2 = re.compile(r'ntroduction') #longue histoire
         intro = 0            #pos de intro
         b2 = False              #signe si on trouve intro
         result = [intro,0,None]
-        with fitz.open(path) as pdf : #je recupere les differents blocks du pdf
-            blocks = pdf.load_page(0).get_text('dict')['blocks']
-            for block in blocks : #je parcours chaque block
-                if self.skipable(block) :
-                    for line in block['lines'] : #je parcours chaque ligne de chaque block
-                        for span in line['spans'] : #parcours de ligne et recuperation du texte
-                            matches2 = pat2.findall(span['text'].lower())
-                            #print(type(span['font']))
-                            if matches2 :
-                                if b2 == False :
-                                    result[0] = intro
-                                    result[1] = span['size']
-                                    result[2] = span['font']
-                                    #print(result[2])
-                                    b2 = True
-                intro += 1
+        blocks = self.pages[0].get_text('dict')['blocks']
+        for block in blocks : #je parcours chaque block
+            if self.skipable(block) :
+                for line in block['lines'] : #je parcours chaque ligne de chaque block
+                    for span in line['spans'] : #parcours de ligne et recuperation du texte
+                        matches2 = pat2.findall(span['text'].lower())
+                        #print(type(span['font']))
+                        if matches2 :
+                            if b2 == False :
+                                result[0] = intro
+                                result[1] = span['size']
+                                result[2] = span['font']
+                                #print(result[2])
+                                b2 = True
+            intro += 1
         return result
 
     """
@@ -132,22 +130,22 @@ class Parser :
     input : path
     output : abstract et sa pos dans une liste
     """
-    def findAbstract(self,path) :
+    def findAbstract(self) :
         result = ""
         pos = 0
-        abs = self.findAbsBlock(path)[0]
-        intro = self.findIntroBlock(path)[0]
+        abs = self.findAbsBlock()[0]
+        intro = self.findIntroBlock()[0]
         if abs != 0 : #and abs < intro : #donc si l'abstract est delimimité par le mot abstract
-            if re.compile(r'Abstract').findall(self.biggestBlock(path,abs,intro)[0]) == [] :
+            if re.compile(r'Abstract').findall(self.biggestBlock(abs,intro)[0]) == [] :
                 #si l'abstract se trouve dans 2 blocks differents
-                result = self.smallestBlock(path,abs,intro)[0] + self.biggestBlock(path,abs,intro)[0] 
-                pos = self.biggestBlock(path,abs,intro)[1]-1
+                result = self.smallestBlock(abs,intro)[0] + self.biggestBlock(abs,intro)[0] 
+                pos = self.biggestBlock(abs,intro)[1]-1
             else :
-                result = self.biggestBlock(path,abs,intro)[0]
-                pos = self.biggestBlock(path,abs,intro)[1]
+                result = self.biggestBlock(abs,intro)[0]
+                pos = self.biggestBlock(abs,intro)[1]
         else :
-            result = self.biggestBlock(path,intro-2,intro)[0]
-            pos = self.biggestBlock(path,intro-2,intro)[1]
+            result = self.biggestBlock(intro-2,intro)[0]
+            pos = self.biggestBlock(intro-2,intro)[1]
         return [result.strip(),pos] #.encode('utf-8') #enleve les espaces inutiles
 
     """
@@ -155,18 +153,17 @@ class Parser :
     input : path , i start , j limite
     output : le block en texte et le numero dudit block dans une liste
     """
-    def biggestBlock(self,path,i,j) :
+    def biggestBlock(self,i,j) :
         result = ""
         tmp = 0
         data = 0
-        with fitz.open(path) as pdf :
-            blocks = pdf.load_page(0).get_text('blocks')
-            for block in blocks :
-                if tmp >= i-1 and tmp < j :
-                    if len(result) < len(block[4]) :
-                        data = tmp #stocke le numero du block de l'abstract
-                        result = block[4]
-                tmp += 1
+        blocks = self.pages[0].get_text('blocks')
+        for block in blocks :
+            if tmp >= i-1 and tmp < j :
+                if len(result) < len(block[4]) :
+                    data = tmp #stocke le numero du block de l'abstract
+                    result = block[4]
+            tmp += 1
         return [result,data]
 
 
@@ -175,17 +172,16 @@ class Parser :
     input : path , i start , j limite
     output : le block en texte et le numero dudit block dans une liste
     """
-    def smallestBlock(self,path,i,j) :
+    def smallestBlock(self,i,j) :
         result = ""
         tmp = 0
         data = 0
-        with fitz.open(path) as pdf :
-            blocks = pdf.load_page(0).get_text('blocks')
-            for block in blocks :
-                if tmp < self.biggestBlock(path,i,j)[1] :
-                    data = tmp #stocke le numero du block de l'abstract
-                    result = block[4]
-                tmp += 1
+        blocks = self.pages[0].get_text('blocks')
+        for block in blocks :
+            if tmp < self.biggestBlock(i,j)[1] :
+                data = tmp #stocke le numero du block de l'abstract
+                result = block[4]
+            tmp += 1
         return [result,data]
 
 
@@ -200,27 +196,26 @@ class Parser :
     input : path
     output : intro en string
     """
-    def findIntro(self,path) :
+    def findIntro(self) :
         result = ""
         b = True
         pattern = re.compile(r'ntroduction')
-        font = self.findIntroBlock(path)[2]
-        size = self.findIntroBlock(path)[1]
-        with fitz.open(path) as pdf :
-            for page in pdf :
-                blocks = page.get_text('dict')['blocks']
-                for block in blocks :
-                    if self.skipable(block) :
-                        for line in block['lines'] :                           
-                            for span in line['spans'] :
-                                if font == span['font'] and size == span['size'] :
-                                    matches = pattern.findall(span['text'].lower())
-                                    if matches :
-                                        b = False
-                                    else :
-                                        b = True
-                                if b == False :
-                                    result += " " + span['text']
+        font = self.findIntroBlock()[2]
+        size = self.findIntroBlock()[1]
+        for page in self.pages :
+            blocks = page.get_text('dict')['blocks']
+            for block in blocks :
+                if self.skipable(block) :
+                    for line in block['lines'] :                           
+                        for span in line['spans'] :
+                            if font == span['font'] and size == span['size'] :
+                                matches = pattern.findall(span['text'].lower())
+                                if matches :
+                                    b = False
+                                else :
+                                    b = True
+                            if b == False :
+                                result += " " + span['text']
             return result
 
 
@@ -235,28 +230,27 @@ class Parser :
     input : path
     output : numero du block et de page
     """
-    def getRefsBlockNumber(self,path) :
+    def getRefsBlockNumber(self) :
         j = 0
         size = 0
         result = [0,0,0]
         pattern = re.compile(r'eference') #souvent le r est sur une autre ligne 
-        with fitz.open(path) as pdf :
-            for page in pdf :
-                blocks = page.get_text('dict')['blocks']
-                i = 0
-                for block in blocks :
-                    if self.skipable(block) :
-                        for line in block['lines'] :
-                            for span in line['spans'] :
-                                matches = pattern.findall(span['text'].lower())
-                                if matches :
-                                    if size < span['size'] :
-                                        size = span['size']
-                                        result[0] = j
-                                        result[1] = i
-                                        result[2] = size
-                    i += 1
-                j += 1
+        for page in self.pages :
+            blocks = page.get_text('dict')['blocks']
+            i = 0
+            for block in blocks :
+                if self.skipable(block) :
+                    for line in block['lines'] :
+                        for span in line['spans'] :
+                            matches = pattern.findall(span['text'].lower())
+                            if matches :
+                                if size < span['size'] :
+                                    size = span['size']
+                                    result[0] = j
+                                    result[1] = i
+                                    result[2] = size
+                i += 1
+            j += 1
         return result
     
     """
@@ -264,27 +258,26 @@ class Parser :
     input : path
     output = refs
     """
-    def findRefs(self,path) :
+    def findRefs(self) :
         result = ""
-        with fitz.open(path) as pdf :
-            npage = self.getRefsBlockNumber(path)[0]
-            nblock = self.getRefsBlockNumber(path)[1]
-            nsize = self.getRefsBlockNumber(path)[2]
-            boolean = False
-            for i in range(npage,pdf.page_count) :
-                current = pdf.load_page(i)
-                blocks = current.get_text('dict')['blocks']
-                j = 0
-                for block in blocks :
-                    if self.skipable(block) :
-                        if j >= nblock :
-                            for line in block['lines'] :
-                                for span in line['spans'] :
-                                    if nsize == span['size'] :
-                                        boolean = True
-                                    if boolean == True :
-                                        result += " " + span['text'] 
-                    j +=1
+        npage = self.getRefsBlockNumber()[0]
+        nblock = self.getRefsBlockNumber()[1]
+        nsize = self.getRefsBlockNumber()[2]
+        boolean = False
+        for i in range(npage,len(self.pages)) :
+            current = self.pages[i]
+            blocks = current.get_text('dict')['blocks']
+            j = 0
+            for block in blocks :
+                if self.skipable(block) :
+                    if j >= nblock :
+                        for line in block['lines'] :
+                            for span in line['spans'] :
+                                if nsize == span['size'] :
+                                    boolean = True
+                                if boolean == True :
+                                    result += " " + span['text'] 
+                j +=1
         return result
    
 
@@ -299,7 +292,7 @@ class Parser :
     input : path et un paramtre qui dit si on veut la conclusion ou la discussion
     output : conclusion en string
     """
-    def find_discussion_or_conclusion(self,path,r="c") :
+    def find_discussion_or_conclusion(self,r="c") :
         result = ""
         b = True
         if r == 'd' : #pour une discussion
@@ -308,27 +301,26 @@ class Parser :
         else : #pour une conclusion
             pat1 = re.compile(r'iscussion')
             pattern = re.compile(r'onclusion')
-        font = self.findIntroBlock(path)[2]
-        size = self.findIntroBlock(path)[1]
-        with fitz.open(path) as pdf :
-            for page in pdf :
-                blocks = page.get_text('dict')['blocks']
-                for block in blocks :
-                    if self.skipable(block) :
-                        for line in block['lines'] :                           
-                            for span in line['spans'] :
-                                if font == span['font'] and size == span['size'] :
-                                    matches = pattern.findall(span['text'].lower())
-                                    if matches :
-                                        b = False
+        font = self.findIntroBlock()[2]
+        size = self.findIntroBlock()[1]
+        for page in self.pages :
+            blocks = page.get_text('dict')['blocks']
+            for block in blocks :
+                if self.skipable(block) :
+                    for line in block['lines'] :                           
+                        for span in line['spans'] :
+                            if font == span['font'] and size == span['size'] :
+                                matches = pattern.findall(span['text'].lower())
+                                if matches :
+                                    b = False
+                                if (pat1.findall(span['text'].lower())) :
+                                    b = True
+                                else :
+                                    pat1 = re.compile(r'eference')
                                     if (pat1.findall(span['text'].lower())) :
                                         b = True
-                                    else :
-                                        pat1 = re.compile(r'eference')
-                                        if (pat1.findall(span['text'].lower())) :
-                                            b = True
-                                if b == False :
-                                    result += " " + span['text']
+                            if b == False :
+                                result += " " + span['text']
             return result
 
 #------------------------------------------------------------------------------
@@ -342,34 +334,33 @@ class Parser :
     input : path
     output : corps en string
     """
-    def findCorps(self,path) :
+    def findCorps(self) :
         result = ""
         primo = False #si on trouve l'intro
         secundo = False #si on trouve le block qui suit l'intro
         trois = False #signale si on trouve la fin
-        font = self.findIntroBlock(path)[2]
-        size = self.findIntroBlock(path)[1]
+        font = self.findIntroBlock()[2]
+        size = self.findIntroBlock()[1]
         pat1 = re.compile(r'ntroduction')
-        pat2 = re.compile(rf'{self.nearestPart(path)[0]}')
-        with fitz.open(path) as pdf :
-            for page in pdf :
-                blocks = page.get_text('dict')['blocks']
-                for block in blocks :
-                    if self.skipable(block) :
-                        for line in block['lines'] :
-                            for span in line['spans'] :
-                                if primo == False :
-                                    if span['font'] == font and span['size'] == size :
-                                        if pat1.findall(span['text'].lower()) :
-                                            primo = True
-                                else :
-                                    if span['font'] == font and span['size'] == size :
-                                        secundo = True
-                                        matches = pat2.findall(span['text'].lower())
-                                        if matches :
-                                            trois = True
-                                if secundo == True and trois == False :
-                                    result += " " + span['text']
+        pat2 = re.compile(rf'{self.nearestPart()[0]}')
+        for page in self.pages :
+            blocks = page.get_text('dict')['blocks']
+            for block in blocks :
+                if self.skipable(block) :
+                    for line in block['lines'] :
+                        for span in line['spans'] :
+                            if primo == False :
+                                if span['font'] == font and span['size'] == size :
+                                    if pat1.findall(span['text'].lower()) :
+                                        primo = True
+                            else :
+                                if span['font'] == font and span['size'] == size :
+                                    secundo = True
+                                    matches = pat2.findall(span['text'].lower())
+                                    if matches :
+                                        trois = True
+                            if secundo == True and trois == False :
+                                result += " " + span['text']
         return result
 
     """
@@ -377,31 +368,30 @@ class Parser :
     input : path ,p1 et p2 des pattern de regex
     output : block en string
     """
-    def nearestPart(self,path) :
+    def nearestPart(self) :
         p1 = re.compile(r'onclusion')
         p2 = re.compile(r'iscussion')
-        font = self.findIntroBlock(path)[2]
-        size = self.findIntroBlock(path)[1]
-        with fitz.open(path) as pdf :
-            for page in pdf :
-                blocks = page.get_text('dict')['blocks']
-                for block in blocks :
-                    if self.skipable(block) :
-                        for line in block['lines'] :
-                            for span in line['spans'] :
-                                if span['font'] == font :
-                                    matches1 = p1.findall(span['text'].lower())
-                                    matches2 = p2.findall(span['text'].lower())
-                                    if span['size'] == size :  
-                                        if matches1 :
-                                            return matches1
-                                        if matches2 :
-                                            return matches2
-                                    else :
-                                        if matches1 :
-                                            return matches1
-                                        if matches2 :
-                                            return matches2
+        font = self.findIntroBlock()[2]
+        size = self.findIntroBlock()[1]
+        for page in self.pages :
+            blocks = page.get_text('dict')['blocks']
+            for block in blocks :
+                if self.skipable(block) :
+                    for line in block['lines'] :
+                        for span in line['spans'] :
+                            if span['font'] == font :
+                                matches1 = p1.findall(span['text'].lower())
+                                matches2 = p2.findall(span['text'].lower())
+                                if span['size'] == size :  
+                                    if matches1 :
+                                        return matches1
+                                    if matches2 :
+                                        return matches2
+                                else :
+                                    if matches1 :
+                                        return matches1
+                                    if matches2 :
+                                        return matches2
         return None
        
         
@@ -450,17 +440,16 @@ class Parser :
         bottompattern = re.compile(rf'{self.findAbstract(path)[0]}')
         result = ""
         boolean = False
-        with fitz.open(path) as pdf :
-            blocks = pdf.load_page(0).get_text('blocks')
-            for block in blocks :
-                if boolean == False :
-                    matches = bottompattern.findall(block[4])
-                    if matches :
-                        boolean = True
-                    else :
-                        if i > top and i < bottom :
-                            result += block[4]
-                i += 1
+        blocks = self.pages[0].get_text('blocks')
+        for block in blocks :
+            if boolean == False :
+                matches = bottompattern.findall(block[4])
+                if matches :
+                    boolean = True
+                else :
+                    if i > top and i < bottom :
+                        result += block[4]
+            i += 1
         return ''.join(result.split('\n'))
    
 #------------------------------------------------------------------------------
@@ -568,6 +557,16 @@ class Parser :
                 if m in val.lower() or jul.lower() :
                     result.appenf(' '.join([val,jul]))
         return result
+    
+#------------------------------------------------------------------------------
+
+#fin du processus
+    
+#------------------------------------------------------------------------------
+    """
+    """
+    def closeFile(self) :
+        self.pdf.close
 
 
  
@@ -617,26 +616,52 @@ def takeGoodString(zone,motif) :
     tabZone = zone.split()
     for val,jul in zip(tabZone[:len(tabZone)-1],tabZone[1:]) :
         for m in tabMotif :
+            """
             print(val," -- ",jul)
+            print(val.lower(),"yyyy")
+            print(len(val))
+            print(m.lower(),"xxxx")
+            """
             if m.lower() in val.lower() or m in jul.lower() :
+                """
+                if m.lower() in jul.lower() :
+                    print(True)
+                """
                 result.append(' '.join([val,jul]))
     return result
 
 """
 fonction qui normalise les noms
-
 """
 
+"""
+input : path du fichier
+output : retourne une liste de page
+"""
+def getPages(path) :
+    res = []
+    pdf = fitz.open(path)
+    for i in range(len(pdf)) :
+        res.append(pdf.load_page(i))
+    return res,pdf
 
-def main() :
+
+def main(path) :
     #parser = Parser()
     #print(parser.getAuthors(path1))
-    print("ta maman")
-    zone = "je suis Mugisho nailman dans ta maman"
-    motif = "Mugisho nailman"
+
+    #print("ta maman")
+    """
+    zone = "je suis Nailman Mugisho dans ta maman"
+    motif = "Nailman"
     result = takeGoodString(zone,motif)
     print(result)
+    """
+    res = (getPages(path))
+    print(type(res[0]))
+    parser = Parser(path)
+    print(parser.findTitle())
 
 
 if __name__ == "__main__" :
-    main()
+    main(sys.argv[1])
