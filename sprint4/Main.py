@@ -31,17 +31,18 @@ class Main :
         for i in range(len(fichiers_pdf)):  #affiche la liste des fichiers à l'utilisateur
             print(f"{i+1}. {fichiers_pdf[i]}")
         input_numeros = input("\nEntrez les numéros des fichiers à sélectionner séparés par des espaces sinon * pour tous les fichiers: ")
+        print("\nVoici la liste des fichiers générés :")
         selectFile = self.selectFiles(path_src, input_numeros)
         
         if option == '-t' : # traitement en txt
             txtMain = txt.FileTXT()
             for file in selectFile :    #parcours le tableau des fichiers selectionnees
-                print(file)
+                print(os.path.join(os.path.splitext(os.path.basename(file))[0] + '.txt'))
                 txtMain.write_file(os.path.join(path_src, file), path_dest) #ecris les resultats dans le dossier de destination
         elif option == '-x' :# traitement en xml
             xmlMain = xml.FileXML()
             for file in selectFile :    #parcours le tableau des fichiers selectionnees
-                print(file)
+                print(os.path.join(os.path.splitext(os.path.basename(file))[0] + '.xml'))
                 xmlMain.write_file(os.path.join(path_src, file),path_dest)  #ecris les resultats dans le dossier de destination
                 
     def listFiles(self, path_src):
@@ -77,7 +78,7 @@ class Main :
                     fichiers_selectionnes.append(fichier_selectionne)
                 else:
                     print("Numéro invalide :", num)
-            return fichiers_selectionnes #retourne la liste des fichiers selectionnees
+        return fichiers_selectionnes #retourne la liste des fichiers selectionnees
         
 def usage():
    print("Usage: python Main.py chemin_du_repertoire_source chemin_du_repertoire_destination [-t | -x]")
