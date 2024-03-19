@@ -432,11 +432,11 @@ class Parser :
     input : path
     output : block
     """
-    def getAuthorZone(self,path) :
+    def getAuthorZone(self) :
         i = 0
-        top = self.getTitleSize(path)[1] #je prends le block du titre
-        bottom = self.findAbstract(path)[1] 
-        bottompattern = re.compile(rf'{self.findAbstract(path)[0]}')
+        top = self.getTitleSize()[1] #je prends le block du titre
+        bottom = self.findAbstract()[1] 
+        bottompattern = re.compile(rf'{self.findAbstract()[0]}')
         result = ""
         boolean = False
         blocks = self.pages[0].get_text('blocks')
@@ -449,7 +449,7 @@ class Parser :
                     if i > top and i < bottom :
                         result += block[4]
             i += 1
-        return ''.join(result.split('\n'))
+        return result
    
 #------------------------------------------------------------------------------
 
@@ -532,10 +532,9 @@ class Parser :
     input : chemin du fichier
     output : liste des supposés noms
     """
-    def getAuthors(self,path) :
+    def getAuthors(self) :
         auteurs = []
-        auteursliste = self.make_abr(self.make_name(self.recognize_adress__(self.getAuthorZone(path))))
-        print("XXXX")
+        auteursliste = self.make_abr(self.make_name(self.recognize_adress__(self.getAuthorZone())))
         if auteursliste != [] :
             for val in auteursliste :
                 print("2")
