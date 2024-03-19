@@ -7,17 +7,17 @@ Created on Fri Feb 23 14:53:52 2024
 """
 
 import os
-import Parser as parser
+import Parser as prs
 
 class FileTXT:
-    def __init__(self):
+    def __init__(self,path):
         self.title = ""
         self.authors = ""
         self.abstract = ""
-        self.parser = proto.Parser()
+        self.parser = prs.Parser(path)
         
     
-    def find_abstractTXT(self,path) :
+    def find_abstractTXT(self) :
         """
             Supprime Abstract s'il revient deux fois
             Input :     self
@@ -25,12 +25,12 @@ class FileTXT:
                         
             Output :    self.abstract : le résumé 
         """            
-        resultat, pos = self.parser.findAbstract(path)
+        resultat, pos = self.parser.findAbstract()
         abstract = resultat.replace("Abstract", "")  
         self.abstract = [abstract.strip(), pos]
         return self.abstract
     
-    def getAuthorTXT(self,path):
+    def getAuthorTXT(self):
         """
             Traite les valeurs d'un tableau de auteurs 
             Input :     self
@@ -38,7 +38,7 @@ class FileTXT:
                         
             Output :    self.authors: les auteurs 
         """  
-        auteurs = self.parser.getAuthor(path)
+        auteurs = self.parser.getAuthor()
         val=""
         if isinstance(auteurs, list) and auteurs:
             for auteur in auteurs:
@@ -49,7 +49,7 @@ class FileTXT:
             self.authors = auteurs
             return self.authors
      
-    def find_titleTXT(self,path) :
+    def find_titleTXT(self) :
         """
             Trouve le titre 
             Input :     self
@@ -57,7 +57,7 @@ class FileTXT:
                         
             Output :    self.title: le titre
         """  
-        self.title = self.parser.findTitle(path)
+        self.title = self.parser.findTitle()
         return self.title
       
     def write_file(fileTXT, src, dst):

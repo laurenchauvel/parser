@@ -35,24 +35,24 @@ class Main :
         selectFile = self.selectFiles(path_src, input_numeros)
         
         if option == '-t' : # traitement en txt
-            txtMain = txt.FileTXT()
+            txtMain = txt.FileTXT(path_src)
             for file in selectFile :    #parcours le tableau des fichiers selectionnees
                 print(os.path.join(os.path.splitext(os.path.basename(file))[0] + '.txt'))
                 txtMain.write_file(os.path.join(path_src, file), path_dest) #ecris les resultats dans le dossier de destination
         elif option == '-x' :# traitement en xml
-            xmlMain = xml.FileXML()
+            xmlMain = xml.FileXML(path_src)
             for file in selectFile :    #parcours le tableau des fichiers selectionnees
                 print(os.path.join(os.path.splitext(os.path.basename(file))[0] + '.xml'))
                 xmlMain.write_file(os.path.join(path_src, file),path_dest)  #ecris les resultats dans le dossier de destination
                 
     def listFiles(self, path_src):
         """
-        Liste des fichiers pdf
+        Liste des fichiers PDF
         Input :     self
-                    path_src : chemin du fichier pdf                   
-        Output :    fichiers_pdf: la liste des fichiers pdf
+                    path_src : chemin du répertoire contenant les fichiers
+        Output :    fichiers_pdf: la liste des fichiers PDF
         """ 
-        fichiers_pdf = [f for f in os.listdir(path_src) if f.endswith('.pdf')] #liste des fichiers sous forme de tableau
+        fichiers_pdf = [os.path.join(path_src, f) for f in os.listdir(path_src) if f.endswith('.pdf') and os.path.isfile(os.path.join(path_src, f))]
         return fichiers_pdf
             
             
