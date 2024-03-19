@@ -423,7 +423,7 @@ class Parser :
         if matches2 :
             result[1] = matches2[0]
         if matches3 :
-            print(matches3)
+            #print(matches3)
             result[2] = matches3[0]
         return result
 
@@ -470,7 +470,7 @@ class Parser :
             #on parcours chaque mot
             for i in range(len(t[0])) :
                 t[0][i][1] #= t[0][i][1].replace('\n','')
-                print(t[0][i][1])
+                #print(t[0][i][1])
                 result.append((sep.join(t[0][i][0].split(".")),t[0][i][0]+'@'+t[0][i][1]))
         #on passe aux adr2 et 3
         if t[1] or t[2] :
@@ -521,9 +521,9 @@ class Parser :
     def make_abr_name(self,nom) :
         abr = ""
         for jul in nom.split(" "):
-            print(jul[0])
+            #print(jul[0])
             abr += (jul[0])
-            print(abr)
+            #print(abr)
         return (nom,abr)
 
    
