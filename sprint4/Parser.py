@@ -33,7 +33,7 @@ class Parser :
     output : titre
     """
     def findTitle(self) :
-        target = self.getTileSize()[0] #la taille max
+        target = self.getTitleSize()[0] #la taille max
         result = ""
         blocks = self.pages[0].get_text('dict')['blocks']
         for block in blocks :
@@ -50,7 +50,7 @@ class Parser :
     input : path
     output : int size , numero pos du block dans une liste
     """
-    def getTileSize(self) :
+    def getTitleSize(self) :
         result = 0
         pos = None
         i = 0
@@ -469,7 +469,7 @@ class Parser :
         if t[0] :
             #on parcours chaque mot
             for i in range(len(t[0])) :
-                t[0][i][1] = t[0][i][1].replace('\n','')
+                t[0][i][1] #= t[0][i][1].replace('\n','')
                 print(t[0][i][1])
                 result.append((sep.join(t[0][i][0].split(".")),t[0][i][0]+'@'+t[0][i][1]))
         #on passe aux adr2 et 3
@@ -537,7 +537,6 @@ class Parser :
         auteursliste = self.make_abr(self.make_name(self.recognize_adress__(self.getAuthorZone())))
         if auteursliste != [] :
             for val in auteursliste :
-                print("2")
                 auteurs.append((val[0],val[1])) 
         return auteurs
     
@@ -645,8 +644,8 @@ def getPages(path) :
 
 
 def main(path) :
-    #parser = Parser()
-    #print(parser.getAuthors(path1))
+    parser = Parser(path)
+    print(parser.getAuthors())
 
     #print("ta maman")
     """
@@ -654,11 +653,11 @@ def main(path) :
     motif = "Nailman"
     result = takeGoodString(zone,motif)
     print(result)
-    """
     res = (getPages(path))
     print(type(res[0]))
     parser = Parser(path)
     print(parser.findTitle())
+    """
 
 
 if __name__ == "__main__" :
