@@ -14,6 +14,7 @@ class FileTXT:
         self.title = ""
         self.authors = ""
         self.abstract = ""
+        self.reference = ""
         self.parser = prs.Parser(path)
         
     
@@ -60,6 +61,17 @@ class FileTXT:
         self.title = self.parser.findTitle()
         return self.title
       
+    def find_RefsTXT(self):
+        """
+            Trouve les références bibliographie
+            Input :     self
+                        
+                        
+            Output :    self.referennce: les references
+        """  
+        self.reference = self.parser.findRefs()
+        return self.reference
+    
     def write_file(fileTXT, src, dst):
         """
             Ecris le fichier TXT 
@@ -89,6 +101,6 @@ class FileTXT:
             d.write("Abstract : ")
             d.write(str(fileTXT.find_abstractTXT()[0]))
             d.write("\n_____________________________\n")
-            d.write("Biblio : ")
-            d.write(fileTXT.parser.findRefs())
+            d.write("Bibliographie : ")
+            d.write(fileTXT.find_RefsTXT())
                     
