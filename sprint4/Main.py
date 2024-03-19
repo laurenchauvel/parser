@@ -35,15 +35,17 @@ class Main :
         selectFile = self.selectFiles(path_src, input_numeros)
         
         if option == '-t' : # traitement en txt
-            txtMain = txt.FileTXT(path_src)
+            
             for file in selectFile :    #parcours le tableau des fichiers selectionnees
+                txtMain = txt.FileTXT(file)
                 print(os.path.join(os.path.splitext(os.path.basename(file))[0] + '.txt'))
-                txtMain.write_file(os.path.join(path_src, file), path_dest) #ecris les resultats dans le dossier de destination
+                txtMain.write_file(file, path_dest) #ecris les resultats dans le dossier de destination
         elif option == '-x' :# traitement en xml
-            xmlMain = xml.FileXML(path_src)
+            
             for file in selectFile :    #parcours le tableau des fichiers selectionnees
+                xmlMain = xml.FileXML(file)
                 print(os.path.join(os.path.splitext(os.path.basename(file))[0] + '.xml'))
-                xmlMain.write_file(os.path.join(path_src, file),path_dest)  #ecris les resultats dans le dossier de destination
+                xmlMain.write_file(file, path_dest)  #ecris les resultats dans le dossier de destination
                 
     def listFiles(self, path_src):
         """

@@ -35,7 +35,7 @@ class FileXML :
         
         with open(dfile,'w') as xml :
             xml.write("<article>\n")
-            xml.write("\t<preamble> " + os.path.splitext(src) + " </preamble>\n")
+            xml.write("\t<preamble> " + base_name + " </preamble>\n")
             xml.write("\t<titre>\n" + self.parser.findTitle() + " </titre>\n")
             xml.write("\t<auteurs>\n")
             
