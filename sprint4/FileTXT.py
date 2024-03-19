@@ -38,11 +38,11 @@ class FileTXT:
                         
             Output :    self.authors: les auteurs 
         """  
-        auteurs = self.parser.getAuthor()
+        auteurs = self.parser.getAuthors()
         val=""
         if isinstance(auteurs, list) and auteurs:
             for auteur in auteurs:
-                val+=auteur+" "
+                val += auteur[0]+","+auteur[1]+"\n"
             self.authors = val
             return self.authors
         else :
@@ -83,7 +83,7 @@ class FileTXT:
             d.write(fileTXT.find_titleTXT())
             d.write("\n_____________________________\n")
             d.write("Auteurs : ")
-            #d.write(str(fileTXT.getAuthorTXT(src)))
+            d.write(str(fileTXT.getAuthorTXT()))
             d.write("\n")
             d.write("\n_____________________________\n")
             d.write("Abstract : ")
