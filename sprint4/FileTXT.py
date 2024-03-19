@@ -7,7 +7,7 @@ Created on Fri Feb 23 14:53:52 2024
 """
 
 import os
-import prototype as proto
+import Parser as parser
 
 class FileTXT:
     def __init__(self):

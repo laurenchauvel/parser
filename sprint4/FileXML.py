@@ -5,16 +5,16 @@ Created on Tue Feb 20 13:20:51 2024
 @author: lauren
 """
 import os
-import prototype as proto
+import Parser as parser
 
 class FileXML :
 
-    def __init__(self):
+    def __init__(self, path):
         self.title = ""
         self.authors = ""
         self.abtsract = ""
         self.references = ""
-        self.parser = proto.Parser()
+        self.parser = proto.Parser(path)
         
          
     """

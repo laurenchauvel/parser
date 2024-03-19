@@ -2,7 +2,6 @@ import re
 import fitz
 import os
 import sys
-import spacy
 from langdetect import detect
 
 class Parser :
