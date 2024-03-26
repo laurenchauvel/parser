@@ -594,17 +594,6 @@ def is_in_language(text, language):
     except:
         return False
 
-"""
-fonction qui reconnait des noms dans du texte
-input : texte
-output : auteurs en str
-"""
-def takeAuthors(texte) :
-    nlpfr = spacy.load('fr_core_news_sm')
-    tmp = nlpfr(texte)
-    for val in tmp.ents :
-        if val.label_ == 'PER' :
-            print(val.text)
 
 """
 fonction de reconnaissance
