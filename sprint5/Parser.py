@@ -454,7 +454,7 @@ class Parser :
                     if i > top and i < bottom :
                         result += block[4]
             i += 1
-        return result.encode('utf-8')
+        return result
    
 #------------------------------------------------------------------------------
 
