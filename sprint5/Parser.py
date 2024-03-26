@@ -322,8 +322,8 @@ class Parser :
                                         b = True
                             if b == False :
                                 result += " " + span['text']
-            result = result.replace("&","&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            return result
+        result = result.replace("&","&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        return result
 
 #------------------------------------------------------------------------------
 
