@@ -215,6 +215,7 @@ class Parser :
                                     b = True
                             if b == False :
                                 result += " " + span['text']
+            result = result.replace("&","&amp;").replace("<", "&lt;").replace(">", "&gt;")
             return result
 
 
@@ -277,6 +278,7 @@ class Parser :
                                 if boolean == True :
                                     result += " " + span['text'] 
                 j +=1
+        result = result.replace("&","&amp;").replace("<", "&lt;").replace(">", "&gt;")
         return result
    
 
@@ -320,6 +322,7 @@ class Parser :
                                         b = True
                             if b == False :
                                 result += " " + span['text']
+            result = result.replace("&","&amp;").replace("<", "&lt;").replace(">", "&gt;")
             return result
 
 #------------------------------------------------------------------------------
@@ -341,6 +344,7 @@ class Parser :
         font = self.findIntroBlock()[2]
         size = self.findIntroBlock()[1]
         pat1 = re.compile(r'ntroduction')
+        print(self.nearestPart()[0])
         pat2 = re.compile(rf'{self.nearestPart()[0]}')
         for page in self.pages :
             blocks = page.get_text('dict')['blocks']
@@ -360,6 +364,7 @@ class Parser :
                                         trois = True
                             if secundo == True and trois == False :
                                 result += " " + span['text']
+        result = result.replace("&","&amp;").replace("<", "&lt;").replace(">", "&gt;")
         return result
 
     """
@@ -449,7 +454,7 @@ class Parser :
                     if i > top and i < bottom :
                         result += block[4]
             i += 1
-        return result
+        return result.encode('utf-8')
    
 #------------------------------------------------------------------------------
 
@@ -645,7 +650,8 @@ def getPages(path) :
 
 def main(path) :
     parser = Parser(path)
-    print(parser.getAuthors())
+    #print(parser.findCorps())
+    print(parser.find_discussion_or_conclusion("d"))
 
     #print("ta maman")
     """
