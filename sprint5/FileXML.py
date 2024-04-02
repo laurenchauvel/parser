@@ -32,7 +32,9 @@ class FileXML :
         #Obtient le nom du fichier sans l'extension
         base_name = os.path.splitext(os.path.basename(src))[0] 
         dfile = os.path.join(dest, base_name+ ".xml")
-        
+        content = self.parser.Between()
+        if content is None:
+            content = "" 
         with open(dfile,'w') as xml :
             xml.write("<article>\n")
             xml.write("\t<preamble>" + base_name+ ".pdf" + "</preamble>\n")
@@ -46,7 +48,7 @@ class FileXML :
                 xml.write("\t\t\t<affiliation>" +"</affiliation>\n")
                 xml.write("\t\t</auteur>\n")
             xml.write("\t</auteurs>\n")
-            
+            xml.write("\t<Affiliation>\n"+content+"</Affiliation>\n")
             xml.write("\t<abstract>\n" +self.parser.findAbstract()[0] + "</abstract>\n")
             xml.write("\t<introduction>\n" +self.parser.findIntro() + "</introduction>\n")
             #xml.write("\t<corps>\n" +self.parser.findCorps() + "</corps>\n")

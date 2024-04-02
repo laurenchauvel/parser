@@ -570,6 +570,75 @@ class Parser :
                     result.appenf(' '.join([val,jul]))
         return result
     
+    
+#------------------------------------------------------------------------------
+
+#Affiliation
+    
+#------------------------------------------------------------------------------
+    def findTitleBlockIndex(self):
+        """
+        Trouve l'index du bloc contenant le titre du document en se basant sur la taille de la police.
+        Le titre est supposé être le texte avec la taille de police la plus grande sur la première page.
+        """
+        maxFontSize = 0
+        titleBlockIndex = None
+        blocks = self.pages[0].get_text('dict')['blocks']  # Supposons que le titre est toujours sur la première page
+    
+        for i, block in enumerate(blocks):
+            if block['type'] == 0:  # Vérifier si c'est un bloc de texte
+                for line in block['lines']:
+                    for span in line['spans']:
+                        if span['size'] > maxFontSize:
+                            maxFontSize = span['size']
+                            titleBlockIndex = i  # Mise à jour de l'index du bloc contenant le titre
+        print(titleBlockIndex)
+        return titleBlockIndex
+
+    def findAuthorsBlockIndex(self):
+        """
+        Trouve l'index du bloc contenant les auteurs du document.
+        Cette méthode suppose que les auteurs peuvent être identifiés par la présence d'adresses e-mail.
+        """
+        auteurs = []
+        authorsBlockIndex = None
+        auteursliste = self.make_abr(self.make_name(self.recognize_adress__(self.getAuthorZone())))
+        if auteursliste != [] :
+            for i in range(len(auteursliste)):  
+                val = auteursliste[i]  
+                auteurs.append((val[0], val[1]))
+                authorsBlockIndex = i
+        
+        if authorsBlockIndex != None:
+            return authorsBlockIndex+2
+        else:
+            return authorsBlockIndex
+    
+    def Between(self):
+        titleIndex = self.findTitleBlockIndex()  # Obtenez l'index du bloc de titre
+        authorsIndex = self.findAuthorsBlockIndex()  # Obtenez l'index du bloc des auteurs
+        authorsInfo = self.getAuthors()
+        if titleIndex is None or authorsIndex is None or titleIndex >= authorsIndex:
+            print("Impossible de trouver la position correcte du titre et des auteurs.")
+            return
+        blocksTexts = []
+        if titleIndex + 1 < authorsIndex:
+            for i in range(titleIndex + 1, authorsIndex):
+                block = self.pages[0].get_text('dict')['blocks'][i]
+                if self.skipable(block):
+                    blockText = " ".join([span['text'] for line in block['lines'] for span in line['spans']])
+                    for authorInfo in authorsInfo:
+                        for info in authorInfo:  # Supposer que authorInfo est un tuple
+                            blockText = blockText.replace(info, "")
+                
+                    if blockText.strip():  # Enlever les espaces vides avant et après
+                        blocksTexts.append(blockText.strip())
+
+                else:
+                    print("Le bloc suivant n'est pas un bloc de texte.")
+        else:
+            print("Aucun bloc de texte entre le titre et les auteurs.")
+        return " ".join(blocksTexts)
 #------------------------------------------------------------------------------
 
 #fin du processus
