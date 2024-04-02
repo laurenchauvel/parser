@@ -42,6 +42,8 @@ class Parser :
                     for span in line['spans'] :
                         if span['size'] == target :
                             result += " " + str(span['text'])#.encode('utf-8'))
+        if result == "" :
+            result = "N/A"
         return result.strip() #enleve les espaces inutiles
     
 
@@ -145,6 +147,8 @@ class Parser :
         else :
             result = self.biggestBlock(intro-2,intro)[0]
             pos = self.biggestBlock(intro-2,intro)[1]
+        if result == "" :
+            result = "N/A"
         return [result.strip(),pos] #.encode('utf-8') #enleve les espaces inutiles
 
     """
@@ -215,8 +219,8 @@ class Parser :
                                     b = True
                             if b == False :
                                 result += " " + span['text']
-            result = result.replace("&","&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            return result
+        result = result.replace("&","&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        return result
 
 
 #------------------------------------------------------------------------------
@@ -231,8 +235,8 @@ class Parser :
     output : numero du block et de page
     """
     def getRefsBlockNumber(self) :
-        j = 0
-        size = 0
+        j = 0 #la page
+        size = 0 
         result = [0,0,0]
         pattern = re.compile(r'eference') #souvent le r est sur une autre ligne 
         for page in self.pages :
@@ -249,7 +253,7 @@ class Parser :
                                     result[0] = j
                                     result[1] = i
                                     result[2] = size
-                i += 1
+                i += 1 #le block
             j += 1
         return result
     
@@ -279,6 +283,8 @@ class Parser :
                                     result += " " + span['text'] 
                 j +=1
         result = result.replace("&","&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        if result == "" :
+            result = "N/A"
         return result
    
 
@@ -323,6 +329,8 @@ class Parser :
                             if b == False :
                                 result += " " + span['text']
         result = result.replace("&","&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        if result == "" :
+            result = "N/A"
         return result
 
 #------------------------------------------------------------------------------
@@ -365,6 +373,8 @@ class Parser :
                             if secundo == True and trois == False :
                                 result += " " + span['text']
         result = result.replace("&","&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        if result == "" :
+            result = "N/A"
         return result
 
     """
