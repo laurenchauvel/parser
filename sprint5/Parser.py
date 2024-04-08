@@ -332,6 +332,42 @@ class Parser :
         if result == "" :
             result = "N/A"
         return result
+    
+    """
+    fonction qui retourne la conclusion
+    input : path et un paramtre qui dit si on veut la conclusion ou la discussion
+    output : conclusion en string
+    """
+    def find_discussion(self) :
+        result = ""
+        b = True
+        pattern = re.compile(r'iscussion')
+        pat1 = re.compile(r'onclusion')
+        font = self.findIntroBlock()[2]
+        size = self.findIntroBlock()[1]
+        for page in self.pages :
+            blocks = page.get_text('dict')['blocks']
+            for block in blocks :
+                if self.skipable(block) :
+                    for line in block['lines'] :                           
+                        for span in line['spans'] :
+                            if font == span['font'] : #and size == span['size'] :
+                                matches = pattern.findall(span['text'].lower())
+                                if matches :
+                                    b = False
+                                if (pat1.findall(span['text'].lower())) :
+                                    b = True
+                                else :
+                                    pat1 = re.compile(r'eference')
+                                    if (pat1.findall(span['text'].lower())) :
+                                        b = True
+                            if b == False :
+                                result += " " + span['text']
+        result = result.replace("&","&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        if result == "" :
+            result = "N/A"
+        return result
+
 
 #------------------------------------------------------------------------------
 

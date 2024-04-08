@@ -52,8 +52,8 @@ class FileXML :
             xml.write("\t<abstract>\n" +self.parser.findAbstract()[0] + "</abstract>\n")
             xml.write("\t<introduction>\n" +self.parser.findIntro() + "</introduction>\n")
             #xml.write("\t<corps>\n" +self.parser.findCorps() + "</corps>\n")
-            xml.write("\t<discussion>\n" +self.parser.find_discussion_or_conclusion("d") +"</discussion>\n")
             xml.write("\t<conclusion>\n" +self.parser.find_discussion_or_conclusion() + "</conclusion>\n")
+            xml.write("\t<discussion>\n" +self.parser.find_discussion() +"</discussion>\n")
             xml.write("\t<biblio>\n"+ self.parser.findRefs() +"</biblio>\n")
             xml.write("</article>")
 
