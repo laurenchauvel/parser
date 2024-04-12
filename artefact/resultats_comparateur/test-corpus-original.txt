@@ -1,0 +1,26 @@
+Boudin-Torres : 69.56
+Das_Martins : 61.97
+Gonzalez : 60.97
+Iria : 51.02
+Jing : 2.17
+mikolov : 67.02
+Torres-moreno : NA
+Torres : 47.72
+kessler94715 : 61.03
+kessler Metics : 67.89
+mikheev : 67.89 
+
+------------------------------------------------------------------------
+
+Boudin-Torres : 79.02
+Das_Martins : 76.95
+Gonzalez : 63.91
+Iria : 60.99
+Jing : 48.31
+mikolov : 81.14
+Torres-moreno : NA
+Torres : 47.72
+kessler94715 : 70.55
+kessler Metics : 77.41
+mikheev : 77.41 
+

@@ -1,0 +1,77 @@
+Test 1
+
+acl2012.xml : 77.26%
+
+b0e5c43edf116ce2909ae009cc27a1546f09.xml : 82.44%
+
+BLESS.xml : 93.39%
+
+C14-1212.xml : 82.96%
+
+Guy.xml : 47.9%
+
+infoEmbeddings.xml : 33.42%
+
+IPM1481.xml : 23.36%
+
+L18-1504.xml : 78.62%
+
+On_the_Morality_of_Artificial_Intelligence.xml OutputReferenceTest/On_the_Morality_of_Artificial_Intelligence.xml : 39.98%
+
+surveyTermExtraction.xml OutputReferenceTest/surveyTermExtraction.xml : 46.77%
+
+total : 60.6%
+
+----------------------------------------------------------------------------------------------------------------------------
+
+Test 2
+
+acl2012.xml : 77.86%
+
+b0e5c43edf116ce2909ae009cc27a1546f09.xml : 82.88%
+
+BLESS.xml : 92.43%
+
+C14-1212.xml : 83.31%
+
+Guy.xml : 44.17%
+
+infoEmbeddings.xml : 61.73%
+
+IPM1481.xml : NA
+
+L18-1504.xml : 70.53%
+
+On_the_Morality_of_Artificial_Intelligence.xml OutputReferenceTest/On_the_Morality_of_Artificial_Intelligence.xml : 52.22%
+
+surveyTermExtraction.xml OutputReferenceTest/surveyTermExtraction.xml : 46.77%
+
+total : 61.19%
+
+----------------------------------------------------------------------------------------------------------------------------
+
+Test 2
+
+acl2012.xml : 77.86%
+
+b0e5c43edf116ce2909ae009cc27a1546f09.xml : 82.88%
+
+BLESS.xml : 92.43%
+
+C14-1212.xml : 83.31%
+
+Guy.xml : 44.17%
+
+infoEmbeddings.xml : 61.73%
+
+IPM1481.xml : NA
+
+L18-1504.xml : 70.53%
+
+On_the_Morality_of_Artificial_Intelligence.xml OutputReferenceTest/On_the_Morality_of_Artificial_Intelligence.xml : 52.22%
+
+surveyTermExtraction.xml OutputReferenceTest/surveyTermExtraction.xml : 46.77%
+
+total : 61.19%
+
+
