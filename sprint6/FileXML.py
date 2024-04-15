@@ -32,7 +32,7 @@ class FileXML :
         #Obtient le nom du fichier sans l'extension
         base_name = os.path.splitext(os.path.basename(src))[0] 
         dfile = os.path.join(dest, base_name+ ".xml")
-        content = self.parser.Between()
+        content = self.parser.Affiliation()
         if content is None:
             content = "" 
         with open(dfile,'w') as xml :
@@ -45,10 +45,13 @@ class FileXML :
                 xml.write("\t\t<auteur>\n")
                 xml.write("\t\t\t<name>"+auteur[0] +"</name>\n")
                 xml.write("\t\t\t<mail>"+auteur[1] +"</mail>\n")
-                xml.write("\t\t\t<affiliation>" +"</affiliation>\n")
+                c=""
+                if isinstance(content, list) and content:
+                    for cont in content:
+                        c+=str(cont)+" "
+                xml.write("\t\t\t<affiliation>" + c +"</affiliation>\n")
                 xml.write("\t\t</auteur>\n")
             xml.write("\t</auteurs>\n")
-            xml.write("\t<Affiliation>\n"+content+"</Affiliation>\n")
             xml.write("\t<abstract>\n" +self.parser.findAbstract()[0] + "</abstract>\n")
             xml.write("\t<introduction>\n" +self.parser.findIntro() + "</introduction>\n")
             #xml.write("\t<corps>\n" +self.parser.findCorps() + "</corps>\n")

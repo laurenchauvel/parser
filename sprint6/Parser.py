@@ -609,7 +609,7 @@ class Parser :
     
 #------------------------------------------------------------------------------
 
-#Affiliation
+#EXTRACTION DES AFFILIATIONS
     
 #------------------------------------------------------------------------------
     def findTitleBlockIndex(self):
@@ -628,7 +628,6 @@ class Parser :
                         if span['size'] > maxFontSize:
                             maxFontSize = span['size']
                             titleBlockIndex = i  # Mise à jour de l'index du bloc contenant le titre
-        print(titleBlockIndex)
         return titleBlockIndex
 
     def findAuthorsBlockIndex(self):
@@ -650,31 +649,27 @@ class Parser :
         else:
             return authorsBlockIndex
     
-    def Between(self):
+    def Affiliation(self):
         titleIndex = self.findTitleBlockIndex()  # Obtenez l'index du bloc de titre
-        authorsIndex = self.findAuthorsBlockIndex()  # Obtenez l'index du bloc des auteurs
-        authorsInfo = self.getAuthors()
+        authorsIndex = self.findAbsBlock()[0]  # Obtenez l'index du bloc des auteurs
         if titleIndex is None or authorsIndex is None or titleIndex >= authorsIndex:
             print("Impossible de trouver la position correcte du titre et des auteurs.")
-            return
-        blocksTexts = []
-        if titleIndex + 1 < authorsIndex:
-            for i in range(titleIndex + 1, authorsIndex):
-                block = self.pages[0].get_text('dict')['blocks'][i]
-                if self.skipable(block):
-                    blockText = " ".join([span['text'] for line in block['lines'] for span in line['spans']])
-                    for authorInfo in authorsInfo:
-                        for info in authorInfo:  # Supposer que authorInfo est un tuple
-                            blockText = blockText.replace(info, "")
-                
-                    if blockText.strip():  # Enlever les espaces vides avant et après
-                        blocksTexts.append(blockText.strip())
+            return []
+        
+        matching_lines = []  # Liste pour stocker les lignes contenant les mots-clés
+        pattern = re.compile(r"(Univ|Institut|Department|Research|Université|University|Laboratoire|Ecole|Laboratory)", re.IGNORECASE)  # Regex pour détecter les mots-clés
 
-                else:
-                    print("Le bloc suivant n'est pas un bloc de texte.")
-        else:
-            print("Aucun bloc de texte entre le titre et les auteurs.")
-        return " ".join(blocksTexts)
+        # Parcourir les blocs de texte entre le titre et les auteurs
+        for i in range(titleIndex + 1, authorsIndex):
+            block = self.pages[0].get_text('dict')['blocks'][i]
+            if self.skipable(block):
+                for line in block['lines']:
+                    line_text = " ".join(span['text'] for span in line['spans'])
+                    
+                    if pattern.search(line_text):  # Recherche des mots-clés dans la ligne de texte
+                        matching_lines.append(line_text)  # Ajouter la ligne contenant le mot-clé
+                        
+        return matching_lines
 #------------------------------------------------------------------------------
 
 #fin du processus

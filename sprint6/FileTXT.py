@@ -69,7 +69,7 @@ class FileTXT:
 
         # Chemin du fichier de destination
         dfile = os.path.join(dst, base_name + '.txt')
-        content = fileTXT.parser.Between()
+        content = fileTXT.parser.Affiliation()
         if content is None:
             content = "" 
         # Extraction des informations et écriture dans le fichier de destination
@@ -81,7 +81,11 @@ class FileTXT:
             d.write(str(fileTXT.find_titleTXT()))
             d.write("\n_____________________________\n")
             d.write("Affiliation : ")
-            d.write(content)
+            c=""
+            if isinstance(content, list) and content:
+                for cont in content:
+                        c+=str(cont)+" "
+            d.write(c)
             d.write("\n_____________________________\n")
             d.write("Auteurs : ")
             d.write(str(fileTXT.getAuthorTXT()))
