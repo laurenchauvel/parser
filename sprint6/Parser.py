@@ -53,6 +53,7 @@ class Parser :
     output : int size , numero pos du block dans une liste
     """
     def getTitleSize(self) :
+        pat = re.compile(r'arXiv:')
         result = 0
         pos = None
         i = 0
@@ -62,12 +63,14 @@ class Parser :
                 for line in block['lines'] :
                     for span in line['spans'] :
                         size = span['size']
-                        #si ce n'est pas un mot je le skip
-                        if size > result and (is_in_language(span['text'],'en')) == True :
-                            result = size
-                            pos = i
+                        matches = pat.findall(span['text'])
+                        if matches == [] :
+                            #si ce n'est pas un mot je le skip
+                            if size > result and (is_in_language(span['text'],'en')) == True :
+                                result = size
+                                pos = i
             i += 1
-        return [result,pos]    
+        return [result,pos]        
     
     
 #------------------------------------------------------------------------------
