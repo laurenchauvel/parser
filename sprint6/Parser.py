@@ -89,17 +89,19 @@ class Parser :
         abs = 0              #pos de abs
         b1 = False              #signe si on trouve abstract
         result = [abs]
-        blocks = self.pages[0].get_text('dict')['blocks']
-        for block in blocks : #je parcours chaque block
-            if self.skipable(block) :
-                for line in block['lines'] : #je parcours chaque ligne de chaque block
-                    for span in line['spans'] : #parcours de ligne et recuperation du texte
-                        matches1 = pat1.findall(span['text'].lower())
-                        if matches1 :
-                            if b1 == False :
-                                result[0] = abs
-                                b1 = True
-            abs += 1
+        for pages in self.pages :
+            blocks = pages.get_text('dict')['blocks']
+            for block in blocks : #je parcours chaque block
+                if self.skipable(block) :
+                    for line in block['lines'] : #je parcours chaque ligne de chaque block
+                        for span in line['spans'] : #parcours de ligne et recuperation du texte
+                            matches1 = pat1.findall(span['text'].lower())
+                            if matches1 :
+                                if b1 == False :
+                                    result[0] = abs
+                                    b1 = True
+                                    break
+                abs += 1
         return result
     
     """
@@ -112,21 +114,22 @@ class Parser :
         intro = 0            #pos de intro
         b2 = False              #signe si on trouve intro
         result = [intro,0,None]
-        blocks = self.pages[0].get_text('dict')['blocks']
-        for block in blocks : #je parcours chaque block
-            if self.skipable(block) :
-                for line in block['lines'] : #je parcours chaque ligne de chaque block
-                    for span in line['spans'] : #parcours de ligne et recuperation du texte
-                        matches2 = pat2.findall(span['text'].lower())
-                        #print(type(span['font']))
-                        if matches2 :
-                            if b2 == False :
-                                result[0] = intro
-                                result[1] = span['size']
-                                result[2] = span['font']
-                                #print(result[2])
-                                b2 = True
-            intro += 1
+        for pages in self.pages :
+            blocks = pages.get_text('dict')['blocks']
+            for block in blocks : #je parcours chaque block
+                if self.skipable(block) :
+                    for line in block['lines'] : #je parcours chaque ligne de chaque block
+                        for span in line['spans'] : #parcours de ligne et recuperation du texte
+                            matches2 = pat2.findall(span['text'].lower())
+                            #print(type(span['font']))
+                            if matches2 :
+                                if b2 == False :
+                                    result[0] = intro
+                                    result[1] = span['size']
+                                    result[2] = span['font']
+                                    #print(result[2])
+                                    b2 = True
+                intro += 1
         return result
 
     """
@@ -654,7 +657,7 @@ class Parser :
     
     def Affiliation(self):
         titleIndex = self.findTitleBlockIndex()  # Obtenez l'index du bloc de titre
-        authorsIndex = self.findAbsBlock()[0]  # Obtenez l'index du bloc des auteurs
+        authorsIndex = self.findAbsBlock()[0]  # Obtenez l'index du bloc abstract
         if titleIndex is None or authorsIndex is None or titleIndex >= authorsIndex:
             print("Impossible de trouver la position correcte du titre et des auteurs.")
             return []
@@ -664,7 +667,8 @@ class Parser :
 
         # Parcourir les blocs de texte entre le titre et les auteurs
         for i in range(titleIndex + 1, authorsIndex):
-            block = self.pages[0].get_text('dict')['blocks'][i]
+            block = type(self.pages[0].get_text('dict')['blocks'])
+            #print(block)
             if self.skipable(block):
                 for line in block['lines']:
                     line_text = " ".join(span['text'] for span in line['spans'])

@@ -41,16 +41,27 @@ class FileXML :
             xml.write("\t<titre>" + self.parser.findTitle() + " </titre>\n")
             
             xml.write("\t<auteurs>\n")
-            for auteur in self.parser.getAuthors() :
+            
+            if self.parser.getAuthors()==[] :
                 xml.write("\t\t<auteur>\n")
-                xml.write("\t\t\t<name>"+auteur[0] +"</name>\n")
-                xml.write("\t\t\t<mail>"+auteur[1] +"</mail>\n")
-                c=""
-                if isinstance(content, list) and content:
-                    for cont in content:
-                        c+=str(cont)+" "
-                xml.write("\t\t\t<affiliation>" + c +"</affiliation>\n")
+                xml.write("\t\t\t<name> </name>\n")
+                xml.write("\t\t\t<mail> </mail>\n")
+                xml.write("\t\t\t<affiliation> </affiliation>\n")
                 xml.write("\t\t</auteur>\n")
+            else :
+                for auteur in self.parser.getAuthors() :
+                    xml.write("\t\t<auteur>\n")
+                    xml.write("\t\t\t<name>"+auteur[0] +"</name>\n")
+                    xml.write("\t\t\t<mail>"+auteur[1] +"</mail>\n")
+                    c=""
+                    if isinstance(content, list) and content:
+                        for cont in content:
+                            c+=str(cont)+" "
+                    xml.write("\t\t\t<affiliation>" + c +"</affiliation>\n")
+                    xml.write("\t\t</auteur>\n")
+                
+            
+                
             xml.write("\t</auteurs>\n")
             xml.write("\t<abstract>\n" +self.parser.findAbstract()[0] + "</abstract>\n")
             xml.write("\t<introduction>\n" +self.parser.findIntro() + "</introduction>\n")
