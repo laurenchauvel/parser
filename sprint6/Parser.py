@@ -10,6 +10,11 @@ class Parser :
         self.path = path
         self.pages = getPages(path)[0]
         self.pdf = getPages(path)[1]
+        try:
+            self.document = fitz.open(path)  # Correctly initialize the document here
+        except Exception as e:
+            print(f"Failed to open document: {e}")
+            self.document = None
     
 #------------------------------------------------------------------------------
 
@@ -226,6 +231,8 @@ class Parser :
                             if b == False :
                                 result += " " + span['text']
         result = result.replace("&","&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        if result == "" :
+            result = self.introduction()
         return result
 
 
@@ -336,7 +343,7 @@ class Parser :
                                 result += " " + span['text']
         result = result.replace("&","&amp;").replace("<", "&lt;").replace(">", "&gt;")
         if result == "" :
-            result = "N/A"
+            result = self.conclusion()
         return result
     
     """
@@ -677,6 +684,160 @@ class Parser :
                         matching_lines.append(line_text)  # Ajouter la ligne contenant le mot-clé
                         
         return matching_lines
+    
+#=========================================================================================================================
+
+#Nouvelle methode d'extraire les intro et conclusion
+
+#=========================================================================================================================
+
+    def extract_titles(self):
+        """
+        Extrait tous les textes ayant la même taille de police que la plus grande taille de "References".
+        """
+        """
+        Extrait tous les textes ayant la même taille et police de caractère que la plus grande taille et police de "References".
+        """
+        keyword = "references"
+        max_size = 0  # Pour suivre la plus grande taille de police trouvée pour "References"
+        max_font = None  # Pour suivre la police utilisée pour la plus grande taille de "References"
+        texts_with_same_style = []  # Pour stocker les textes avec cette taille et police de caractère
+
+        # Première passe: Trouver la plus grande taille et la police de "References"
+        for page in self.document:
+            blocks = page.get_text("dict")["blocks"]
+            for block in blocks:
+                if block['type'] == 0:  # S'assurer que le bloc est de type texte
+                    for line in block["lines"]:
+                        for span in line["spans"]:
+                            if keyword in span['text'].lower():
+                                if span['size'] > max_size:
+                                    max_size = span['size']
+                                    max_font = span['font']
+                                elif span['size'] == max_size and span['font'] == max_font:
+                                    # Mise à jour du max_font uniquement si la taille est la même et que nous n'avons pas encore de font
+                                    max_font = span['font']
+
+        # Deuxième passe: Collecter tous les textes qui utilisent cette taille de police et cette police
+        for page in self.document:
+            blocks = page.get_text("dict")["blocks"]
+            for block in blocks:
+                if block['type'] == 0:
+                    for line in block["lines"]:
+                        for span in line["spans"]:
+                            if span['size'] == max_size and span['font'] == max_font:
+                                texts_with_same_style.append(span['text'])
+
+        # Afficher les résultats
+        print(f"Texts with the same font style as the largest 'References' ({max_font}, {max_size} pt):")
+        for text in texts_with_same_style:
+            print(text)
+
+        return texts_with_same_style
+
+
+    def find_word(self,word):
+        """
+        Cherche les textes contenant 'conclusion' parmi ceux retournés par extract_titles.
+        """
+        titles_with_same_style = self.extract_titles()
+        conclusions = [text for text in titles_with_same_style if word in text.lower()]
+        
+        # Afficher les résultats
+        if conclusions:
+            print("Found conclusions with the same font style as the largest 'References':")
+            for conclusion in conclusions:
+                print(conclusion)
+        else:
+            print("No 'Conclusion' section found with the specified font style.")
+
+        return conclusions
+    
+    def find_next_word(self,word):
+        titles_with_same_style = self.extract_titles()
+        conclusion_list = self.find_word(word)
+    
+        if conclusion_list:
+            first_conclusion = conclusion_list[0].lower()
+            for i, text in enumerate(titles_with_same_style):
+                if first_conclusion in text.lower():
+                    if i + 1 < len(titles_with_same_style):  # Ensure there is a next text
+                        return titles_with_same_style[i + 1], i + 1
+                    else:
+                        return None, None  # No next text found
+        return None, None  # No conclusions found at all
+
+    
+    def conclusion(self):
+        keyword = "conclusion"
+        found_conclusion = False  # Indicateur pour savoir si on a trouvé le mot 'conclusion'
+        conclusion_block_found = False  # Pour vérifier si on est dans le bloc après 'conclusion'
+        text_after_conclusion = ""  # Pour stocker le texte après 'conclusion'
+        next_conclusion_index = self.find_next_word("conclusion")  # Obtenir l'index du bloc de la prochaine conclusion
+    
+        for page in self.document:  # Parcourir chaque page du document
+            blocks = page.get_text("dict")["blocks"]  # Obtenir les blocs de texte en format dictionnaire
+    
+            for index, block in enumerate(blocks):
+                if block['type'] == 0:  # S'assurer que le bloc est de type texte
+                    line_text = " ".join(span['text'] for line in block['lines'] for span in line['spans'])
+                    if keyword in line_text.lower() and not found_conclusion:
+                        found_conclusion = True
+                        continue  # Passer au bloc suivant après avoir trouvé 'conclusion'
+                    if found_conclusion and not conclusion_block_found:
+                        text_after_conclusion = line_text
+                        conclusion_block_found = True  # Marquer que le texte a été trouvé
+                        # Arrêter si on atteint l'index de la prochaine conclusion
+                        if index == next_conclusion_index:
+                            break
+    
+                if conclusion_block_found and index == next_conclusion_index:
+                    break
+            if conclusion_block_found and index == next_conclusion_index:
+                break
+    
+        if text_after_conclusion:
+            print("Text after 'Conclusion':", text_after_conclusion)
+        else:
+            print("No text found after 'Conclusion' section.")
+    
+        return text_after_conclusion
+    
+    def introduction(self):
+        keyword = "introduction"
+        found_intro = False  # Indicateur pour savoir si on a trouvé le mot 'intro'
+        intro_block_found = False  # Pour vérifier si on est dans le bloc après 'intro'
+        text_after_intro = ""  # Pour stocker le texte après 'conclusion'
+        next_intro_index = self.find_next_word(keyword)  # Obtenir l'index du bloc de la prochaine intro
+    
+        for page in self.document:  # Parcourir chaque page du document
+            blocks = page.get_text("dict")["blocks"]  # Obtenir les blocs de texte en format dictionnaire
+    
+            for index, block in enumerate(blocks):
+                if block['type'] == 0:  # S'assurer que le bloc est de type texte
+                    line_text = " ".join(span['text'] for line in block['lines'] for span in line['spans'])
+                    if keyword in line_text.lower() and not found_intro:
+                        found_intro = True
+                        continue  # Passer au bloc suivant après avoir trouvé 'intro'
+                    
+                    if found_intro and not intro_block_found:
+                        text_after_intro = line_text
+                        intro_block_found = True  # Marquer que le texte a été trouvé
+                        # Arrêter si on atteint l'index de la prochaine intro
+                        if index == next_intro_index:
+                            break
+    
+                if intro_block_found and index == next_intro_index:
+                    break
+            if intro_block_found and index == next_intro_index:
+                break
+    
+        if text_after_intro:
+            print("Text after 'intro':", text_after_intro)
+        else:
+            print("No text found after 'intro' section.")
+    
+        return text_after_intro
 #------------------------------------------------------------------------------
 
 #fin du processus
