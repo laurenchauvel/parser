@@ -7,33 +7,38 @@ Created on Fri Feb 23 14:53:52 2024
 """
 
 import os
-import Parser as prs
+import prototype as prs
 
 class FileTXT:
     def __init__(self,path):
-        self.title = ""
+        self.parser = prs.Parser(path)
+        self.parser.remplir_dico()
+        self.title = self.parser.extract_title()
+        self.references = self.parser.extract_references()
+        self.introduction = self.parser.extract_intro()
+        self.discussion = self.parser.extract_discussion()
+        self.conclusion = self.parser.extract_conclusion()
         self.authors = ""
         self.abstract = ""
-        self.parser = prs.Parser(path)
         
-    
+    """
+    Supprime Abstract s'il revient deux fois
+    Input : self
+    Output : self.abstract : le résumé 
+    """            
     def find_abstractTXT(self) :
-        """
-            Supprime Abstract s'il revient deux fois
-            Input :     self
-            Output :    self.abstract : le résumé 
-        """            
-        resultat, pos = self.parser.findAbstract()
+        resultat = self.parser.extract_abstract()
         abstract = resultat.replace("Abstract", "")  
-        self.abstract = [abstract.strip(), pos]
+        self.abstract = abstract.strip()
         return self.abstract
     
+
+    """
+    Traite les valeurs d'un tableau de auteurs 
+    Input : self
+    Output : self.authors: les auteurs 
+    """  
     def getAuthorTXT(self):
-        """
-            Traite les valeurs d'un tableau de auteurs 
-            Input :     self
-            Output :    self.authors: les auteurs 
-        """  
         auteurs = self.parser.getAuthors()
         val=""
         if isinstance(auteurs, list) and auteurs:
@@ -44,32 +49,26 @@ class FileTXT:
         else :
             self.authors = auteurs
             return self.authors
-     
+    """
+    Trouve le titre 
+    Input : self
+    Output : self.title: le titre
+    """  
     def find_titleTXT(self) :
-        """
-            Trouve le titre 
-            Input :     self
-            Output :    self.title: le titre
-        """  
-        self.title = self.parser.findTitle()
+        self.title = self.parser.extract_title()
         return self.title
     
-      
-    def write_file(fileTXT, src, dst):
-        """
-            Ecris le fichier TXT 
-            Input :     self
-                        src : chemin du fichier pdf 
-                        dst : chemin de la destination
-        """  
-    
+    """
+    Ecris le fichier TXT 
+    Input : self , src : chemin du fichier pdf , dst : chemin de la destination
+    """  
+    def write_file(self, src, dst):
         if not os.path.exists(dst):
             os.makedirs(dst)
         base_name = os.path.splitext(os.path.basename(src))[0]
-
         # Chemin du fichier de destination
         dfile = os.path.join(dst, base_name + '.txt')
-        content = fileTXT.parser.Affiliation()
+        content = self.parser.extract_affiliation()
         if content is None:
             content = "" 
         # Extraction des informations et écriture dans le fichier de destination
@@ -78,7 +77,7 @@ class FileTXT:
             d.write(base_name + ".pdf")
             d.write("\n_____________________________\n")
             d.write("Titres : ")
-            d.write(str(fileTXT.find_titleTXT()))
+            d.write(self.title)
             d.write("\n_____________________________\n")
             d.write("Affiliation : ")
             c=""
@@ -88,13 +87,14 @@ class FileTXT:
             d.write(c)
             d.write("\n_____________________________\n")
             d.write("Auteurs : ")
-            d.write(str(fileTXT.getAuthorTXT()))
+            d.write(str(self.getAuthorTXT()))
             d.write("\n")
             d.write("\n_____________________________\n")
             d.write("Abstract : ")
-            d.write(str(fileTXT.find_abstractTXT()[0]))
+            d.write(str(self.find_abstractTXT()))
             d.write("\n_____________________________\n")
             d.write("Biblio : ")
-            d.write(fileTXT.parser.findRefs())
+            d.write(self.references)
+            prs.closePdf(self.parser.pdf)
             
                     

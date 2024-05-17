@@ -11,7 +11,7 @@ import os
 class Main :
      
     
-    def main(self, path_src, path_dest, option="-t"):
+    def main(self, path_src, path_dest, option="-x"):
         """
         Créer les fichiers "résumés" des articles contenu dans le repertoire source
         et les place dans le repertoire destination
@@ -19,7 +19,6 @@ class Main :
                     path_dest : chemin du repertoire destination
                     option : "-t" pour txt, "-x" pour xml
         """
-
         path_src = sys.argv[1]
         path_dest = sys.argv[2]
         fichiers_pdf = self.listFiles(path_src)
@@ -89,12 +88,11 @@ def usage():
    print("  -x : Générer des fichiers XML")
    sys.exit(1)
 
-def main(s,d,o="-t") :
+def main(s,d,o="-x") :
     main = Main()
     main.main(s,d,o)
 
 if __name__ == "__main__" :
-    
     if len(sys.argv) < 3 :
         usage()
     elif len(sys.argv) > 4 :

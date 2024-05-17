@@ -5,16 +5,20 @@ Created on Tue Feb 20 13:20:51 2024
 @author: lauren
 """
 import os
-import Parser as par
+import prototype as par
 
 class FileXML :
 
     def __init__(self, path):
-        self.title = ""
-        self.authors = ""
-        self.abtsract = ""
-        self.references = ""
         self.parser = par.Parser(path)
+        self.parser.remplir_dico()
+        self.title = self.parser.extract_title()
+        self.references = self.parser.extract_references()
+        self.introduction = self.parser.extract_intro()
+        self.discussion = self.parser.extract_discussion()
+        self.conclusion = self.parser.extract_conclusion()
+        self.abstract = self.parser.extract_abstract()
+        self.authors = self.parser.extract_authors()
         
          
     """
@@ -32,24 +36,24 @@ class FileXML :
         #Obtient le nom du fichier sans l'extension
         base_name = os.path.splitext(os.path.basename(src))[0] 
         dfile = os.path.join(dest, base_name+ ".xml")
-        content = self.parser.Affiliation()
+        content = self.parser.extract_affiliation()
         if content is None:
             content = "" 
         with open(dfile,'w') as xml :
             xml.write("<article>\n")
             xml.write("\t<preamble>" + base_name+ ".pdf" + "</preamble>\n")
-            xml.write("\t<titre>" + self.parser.findTitle() + " </titre>\n")
+            xml.write("\t<titre>" + self.title + " </titre>\n")
             
             xml.write("\t<auteurs>\n")
             
-            if self.parser.getAuthors()==[] :
+            if self.authors==[] or self.authors == ['']:
                 xml.write("\t\t<auteur>\n")
                 xml.write("\t\t\t<name> </name>\n")
                 xml.write("\t\t\t<mail> </mail>\n")
                 xml.write("\t\t\t<affiliation> </affiliation>\n")
                 xml.write("\t\t</auteur>\n")
             else :
-                for auteur in self.parser.getAuthors() :
+                for auteur in self.authors :
                     xml.write("\t\t<auteur>\n")
                     xml.write("\t\t\t<name>"+auteur[0] +"</name>\n")
                     xml.write("\t\t\t<mail>"+auteur[1] +"</mail>\n")
@@ -59,17 +63,16 @@ class FileXML :
                             c+=str(cont)+" "
                     xml.write("\t\t\t<affiliation>" + c +"</affiliation>\n")
                     xml.write("\t\t</auteur>\n")
-                
             
-                
             xml.write("\t</auteurs>\n")
-            xml.write("\t<abstract>\n" +self.parser.findAbstract()[0] + "</abstract>\n")
-            xml.write("\t<introduction>\n" +self.parser.findIntro() + "</introduction>\n")
-            #xml.write("\t<corps>\n" +self.parser.findCorps() + "</corps>\n")
-            xml.write("\t<conclusion>\n" +self.parser.find_discussion_or_conclusion() + "</conclusion>\n")
-            xml.write("\t<discussion>\n" +self.parser.find_discussion() +"</discussion>\n")
-            xml.write("\t<biblio>\n"+ self.parser.findRefs() +"</biblio>\n")
+            xml.write("\t<abstract>\n" +self.abstract + "</abstract>\n")
+            xml.write("\t<introduction>\n" +self.introduction + "</introduction>\n")
+            xml.write("\t<discussion>\n" +self.discussion +"</discussion>\n")
+            xml.write("\t<conclusion>\n" +self.conclusion + "</conclusion>\n")
+            xml.write("\t<biblio>\n"+ self.references +"</biblio>\n")
             xml.write("</article>")
+
+            par.closePdf(self.parser.pdf)
 
                 
         
